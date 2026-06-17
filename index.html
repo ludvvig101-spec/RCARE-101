@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RCARE-101 — Respiratory Therapy School</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03030a;--bg2:#07071a;--bg3:#0a0a1f;--bg4:#0f0f28;
+  --purple:#7B6FFF;--purple2:#6C63FF;--purple3:#c4bfff;--pl:rgba(123,111,255,0.15);
+  --teal:#00FFD1;--teal2:#00D4AA;--tl:rgba(0,255,209,0.12);
+  --coral:#FF4D6D;--amber:#FF9F1C;--gold:#FFE600;
+  --pink:#FF2D78;--cyan:#00E5FF;--lime:#39FF14;
+  --text:#f0efe8;--text2:#b0aed4;--text3:#6b6a9a;
+  --card:rgba(255,255,255,0.03);--card-border:rgba(255,255,255,0.08);
+  --gp:0 0 20px rgba(123,111,255,0.7),0 0 60px rgba(123,111,255,0.35),0 0 120px rgba(123,111,255,0.15);
+  --gt:0 0 20px rgba(0,255,209,0.7),0 0 60px rgba(0,255,209,0.35),0 0 120px rgba(0,255,209,0.15);
+  --gc:0 0 20px rgba(255,77,109,0.7),0 0 60px rgba(255,77,109,0.35),0 0 120px rgba(255,77,109,0.15);
+  --ga:0 0 20px rgba(255,159,28,0.7),0 0 60px rgba(255,159,28,0.35),0 0 120px rgba(255,159,28,0.15);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;min-height:100vh;background-image:linear-gradient(rgba(123,111,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(123,111,255,0.025) 1px,transparent 1px);background-size:48px 48px}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--purple2);border-radius:3px;box-shadow:0 0 8px var(--purple2)}
+
+/* ── CANVAS BG ── */
+#particle-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:flex;align-items:center;gap:16px;background:rgba(3,3,10,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(123,111,255,0.2);box-shadow:0 1px 0 rgba(123,111,255,0.1),0 4px 32px rgba(0,0,0,0.6);transition:all .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--text);text-decoration:none}
+.nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--purple),var(--teal));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(123,111,255,0.6),0 0 32px rgba(0,255,209,0.3)}
+.nav-spacer{flex:1}
+#xp-nav{display:flex;align-items:center;gap:10px}
+.xp-pill{background:rgba(123,111,255,0.12);border:1px solid rgba(123,111,255,0.5);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--purple3);white-space:nowrap;box-shadow:0 0 12px rgba(123,111,255,0.3),inset 0 0 8px rgba(123,111,255,0.1);text-shadow:0 0 10px rgba(123,111,255,0.8)}
+.lvl-pill{background:rgba(255,159,28,0.1);border:1px solid rgba(255,159,28,0.5);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--amber);box-shadow:0 0 12px rgba(255,159,28,0.3),inset 0 0 8px rgba(255,159,28,0.08);text-shadow:0 0 10px rgba(255,159,28,0.8)}
+.badge-pill{background:rgba(255,230,0,0.08);border:1px solid rgba(255,230,0,0.4);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--gold);box-shadow:0 0 12px rgba(255,230,0,0.25),inset 0 0 8px rgba(255,230,0,0.06);text-shadow:0 0 10px rgba(255,230,0,0.8)}
+.nav-prog-btn{background:none;border:1px solid rgba(123,111,255,0.25);border-radius:8px;padding:6px 14px;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.nav-prog-btn:hover{border-color:var(--purple);color:var(--purple3);box-shadow:0 0 12px rgba(123,111,255,0.4);text-shadow:0 0 8px rgba(123,111,255,0.6)}
+
+/* ── HERO ── */
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;text-align:center;overflow:hidden;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(123,111,255,0.1);border:1px solid rgba(123,111,255,0.45);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--purple3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:28px;opacity:0;animation:fadeUp .8s .2s forwards;box-shadow:0 0 20px rgba(123,111,255,0.25),inset 0 0 20px rgba(123,111,255,0.08);text-shadow:0 0 12px rgba(123,111,255,0.9)}
+.hero-eyebrow-dot{width:6px;height:6px;background:var(--purple);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 8px var(--purple),0 0 16px var(--purple)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero-h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(38px,7vw,84px);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:20px;opacity:0;animation:fadeUp .9s .4s forwards}
+.hero-h1 .grad{background:linear-gradient(135deg,#fff 0%,var(--purple3) 40%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(123,111,255,0.5)) drop-shadow(0 0 40px rgba(0,255,209,0.3))}
+.hero-sub{font-size:clamp(15px,2vw,20px);color:var(--text2);max-width:560px;line-height:1.65;margin-bottom:40px;opacity:0;animation:fadeUp .9s .55s forwards;font-weight:400}
+.hero-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .7s forwards;margin-bottom:60px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--purple);border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;transition:all .25s;text-decoration:none;font-family:inherit;box-shadow:0 0 20px rgba(123,111,255,0.6),0 0 60px rgba(123,111,255,0.25);text-shadow:0 0 10px rgba(255,255,255,0.5)}
+.btn-primary:hover{background:#9487ff;transform:translateY(-2px);box-shadow:0 0 30px rgba(123,111,255,0.9),0 0 80px rgba(123,111,255,0.5),0 8px 32px rgba(0,0,0,0.4)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,209,0.06);border:1px solid rgba(0,255,209,0.35);border-radius:12px;padding:14px 28px;font-size:15px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .25s;font-family:inherit;box-shadow:0 0 16px rgba(0,255,209,0.2);text-shadow:0 0 10px rgba(0,255,209,0.6)}
+.btn-secondary:hover{background:rgba(0,255,209,0.1);border-color:var(--teal);transform:translateY(-2px);box-shadow:0 0 30px rgba(0,255,209,0.5),0 0 80px rgba(0,255,209,0.2)}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .85s forwards}
+.h-stat{text-align:center}
+.h-stat-n{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--purple3),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(123,111,255,0.7))}
+.h-stat-l{font-size:12px;color:var(--text3);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;animation:float 3s ease-in-out infinite;opacity:.5}
+.hero-scroll span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.scroll-arrow{width:20px;height:20px;border-right:1.5px solid var(--text3);border-bottom:1.5px solid var(--text3);transform:rotate(45deg)}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* ── ANIMATED LUNGS SVG ── */
+.hero-lungs{width:200px;height:160px;margin:0 auto 40px;opacity:0;animation:fadeUp .9s .15s forwards}
+.lung-path{stroke-dasharray:600;stroke-dashoffset:600;animation:drawLung 2s 1s forwards ease-out}
+@keyframes drawLung{to{stroke-dashoffset:0}}
+.lung-breath{animation:breathe 3s ease-in-out infinite 2.5s}
+@keyframes breathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.04) translateY(-3px)}}
+
+/* ── SECTION ── */
+.section{position:relative;z-index:1;padding:80px 24px}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--purple3);margin-bottom:12px;text-shadow:0 0 12px rgba(123,111,255,0.8)}
+.section-label::before{content:'';width:20px;height:2px;background:var(--purple);border-radius:1px;box-shadow:0 0 8px var(--purple),0 0 20px var(--purple)}
+.section-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.025em;color:var(--text);margin-bottom:14px;line-height:1.1}
+.section-h2 em{font-style:normal;background:linear-gradient(135deg,var(--purple3),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 14px rgba(123,111,255,0.6)) drop-shadow(0 0 30px rgba(0,255,209,0.3))}
+.section-sub{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:48px}
+
+/* ── ROOM GRID ── */
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.room-card{background:rgba(3,3,10,0.8);border:1px solid rgba(123,111,255,0.12);border-radius:20px;padding:28px;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.room-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1,rgba(123,111,255,.06)),transparent 60%);opacity:0;transition:opacity .35s;border-radius:20px}
+.room-card::after{content:'';position:absolute;inset:-1px;border-radius:21px;border:1px solid transparent;background:linear-gradient(135deg,var(--c1,rgba(123,111,255,0)),transparent) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;opacity:0;transition:opacity .35s}
+.room-card:hover{transform:translateY(-8px) scale(1.01);border-color:rgba(123,111,255,0.5);box-shadow:0 0 30px rgba(123,111,255,0.2),0 0 80px rgba(123,111,255,0.08),0 20px 60px rgba(0,0,0,0.5)}
+.room-card:hover::before{opacity:1}
+.room-card:hover::after{opacity:1}
+.room-card-glow{position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;opacity:0;filter:blur(50px);transition:opacity .4s;pointer-events:none}
+.room-card:hover .room-card-glow{opacity:0.25}
+.room-card-icon{font-size:36px;margin-bottom:16px;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5))}
+.room-card-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:10px}
+.room-card-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.3}
+.room-card-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.room-card-footer{display:flex;align-items:center;justify-content:space-between}
+.room-card-xp{font-size:12px;font-weight:600;color:var(--text3)}
+.room-prog-mini{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;flex:1;margin:0 12px}
+.room-prog-mini-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.room-enter-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(123,111,255,0.3);background:rgba(123,111,255,0.06);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--purple3);flex-shrink:0;transition:all .2s}
+.room-card:hover .room-enter-btn{background:var(--purple);border-color:var(--purple);color:#fff;transform:scale(1.1);box-shadow:0 0 16px rgba(123,111,255,0.8)}
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);margin:0 24px}
+
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:200;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;transition:background .3s}
+#modal-overlay.open{background:rgba(0,0,0,0.75);pointer-events:all;backdrop-filter:blur(8px)}
+#modal-box{background:#0f0f1f;border:1px solid rgba(255,255,255,0.08);border-radius:24px 24px 0 0;width:100%;max-width:880px;max-height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .4s cubic-bezier(.25,.46,.45,.94);box-shadow:0 -20px 80px rgba(0,0,0,0.6)}
+#modal-overlay.open #modal-box{transform:translateY(0)}
+.modal-drag{width:40px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:14px auto 0;flex-shrink:0}
+#modal-header{display:flex;align-items:center;gap:12px;padding:16px 22px 14px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
+.modal-icon-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+#modal-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--text);flex:1}
+#modal-sub{font-size:12px;color:var(--text3)}
+#modal-close{background:rgba(255,255,255,0.06);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px;transition:all .2s}
+#modal-close:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+#modal-body{overflow-y:auto;flex:1;padding:0}
+#modal-body::-webkit-scrollbar{width:4px}
+#modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+
+/* ── ACTIVITY STYLES ── */
+.av{padding:20px 22px}
+.a-prog-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:18px}
+.a-prog-fill{height:100%;border-radius:2px;transition:width .4s}
+.a-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:100px;margin-bottom:12px}
+.badge-purple{background:rgba(123,111,255,0.12);border:1px solid rgba(123,111,255,0.45);color:var(--purple3);box-shadow:0 0 12px rgba(123,111,255,0.3),inset 0 0 8px rgba(123,111,255,0.08);text-shadow:0 0 8px rgba(123,111,255,0.8)}
+.badge-teal{background:rgba(0,255,209,0.08);border:1px solid rgba(0,255,209,0.4);color:var(--teal);box-shadow:0 0 12px rgba(0,255,209,0.25),inset 0 0 8px rgba(0,255,209,0.06);text-shadow:0 0 8px rgba(0,255,209,0.8)}
+.badge-amber{background:rgba(255,159,28,0.08);border:1px solid rgba(255,159,28,0.4);color:var(--amber);box-shadow:0 0 12px rgba(255,159,28,0.25),inset 0 0 8px rgba(255,159,28,0.06);text-shadow:0 0 8px rgba(255,159,28,0.8)}
+.badge-red{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.4);color:var(--coral);box-shadow:0 0 12px rgba(255,77,109,0.25),inset 0 0 8px rgba(255,77,109,0.06);text-shadow:0 0 8px rgba(255,77,109,0.8)}
+.a-q-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 18px;font-size:15px;color:var(--text);line-height:1.65;margin-bottom:14px}
+.a-opts{display:grid;gap:8px;margin-bottom:12px}
+.a-opt{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:13px 16px;font-size:14px;color:var(--text);cursor:pointer;text-align:left;line-height:1.45;transition:all .18s;font-family:inherit}
+.a-opt:hover:not(:disabled){border-color:rgba(123,111,255,0.6);background:rgba(123,111,255,0.08);box-shadow:0 0 16px rgba(123,111,255,0.2)}
+.a-opt.ok{border-color:var(--teal);background:rgba(0,255,209,0.07);color:var(--teal);box-shadow:0 0 20px rgba(0,255,209,0.3),inset 0 0 12px rgba(0,255,209,0.05);text-shadow:0 0 10px rgba(0,255,209,0.5)}
+.a-opt.bad{border-color:var(--coral);background:rgba(255,77,109,0.07);color:var(--coral);box-shadow:0 0 20px rgba(255,77,109,0.3),inset 0 0 12px rgba(255,77,109,0.05);text-shadow:0 0 10px rgba(255,77,109,0.5)}
+.a-opt:disabled{cursor:default}
+.a-exp-box{background:rgba(3,3,20,0.8);border-left:2px solid var(--purple);border-radius:0 12px 12px 0;padding:12px 16px;font-size:13px;color:var(--text2);line-height:1.7;margin-top:10px;box-shadow:inset 0 0 20px rgba(123,111,255,0.05),-2px 0 20px rgba(123,111,255,0.3)}
+.a-next-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(123,111,255,0.06);border:1px solid rgba(123,111,255,0.4);border-radius:10px;padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;color:var(--purple3);font-family:inherit;transition:all .2s;box-shadow:0 0 10px rgba(123,111,255,0.15);text-shadow:0 0 8px rgba(123,111,255,0.5)}
+.a-next-btn:hover{background:rgba(123,111,255,0.15);border-color:var(--purple);box-shadow:0 0 20px rgba(123,111,255,0.5),0 0 40px rgba(123,111,255,0.2)}
+.a-next-btn.teal{background:rgba(0,255,209,0.05);border-color:rgba(0,255,209,0.4);color:var(--teal);box-shadow:0 0 10px rgba(0,255,209,0.15);text-shadow:0 0 8px rgba(0,255,209,0.6)}.a-next-btn.teal:hover{background:rgba(0,255,209,0.1);border-color:var(--teal);box-shadow:0 0 20px rgba(0,255,209,0.5),0 0 40px rgba(0,255,209,0.2)}
+.a-next-btn.red{background:rgba(255,77,109,0.05);border-color:rgba(255,77,109,0.4);color:var(--coral);box-shadow:0 0 10px rgba(255,77,109,0.15);text-shadow:0 0 8px rgba(255,77,109,0.6)}.a-next-btn.red:hover{background:rgba(255,77,109,0.1);border-color:var(--coral);box-shadow:0 0 20px rgba(255,77,109,0.5)}
+
+/* FLASHCARD */
+.fc-wrap{perspective:1000px;cursor:pointer;margin-bottom:16px}
+.fc{min-height:180px;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.46,.45,.94);border-radius:16px}
+.fc.flip{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid rgba(123,111,255,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.75rem;text-align:center;background:rgba(3,3,20,0.9)}
+.fc-back{transform:rotateY(180deg);background:rgba(10,5,30,0.95);border-color:rgba(123,111,255,0.45);box-shadow:inset 0 0 40px rgba(123,111,255,0.08),0 0 30px rgba(123,111,255,0.15)}
+.fc-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:14px}
+.fc-q{font-size:16px;color:var(--text);line-height:1.55;font-weight:500}
+.fc-a{font-size:17px;font-weight:700;color:var(--purple3);line-height:1.4;font-family:'Space Grotesk',sans-serif;text-shadow:0 0 20px rgba(123,111,255,0.8),0 0 40px rgba(123,111,255,0.4)}
+.fc-hint{font-size:12px;color:rgba(123,111,255,0.3);margin-top:12px}
+.fc-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* FIB */
+.fib-prompt{background:rgba(3,3,20,0.8);border:1px solid rgba(123,111,255,0.25);border-radius:14px;padding:16px 18px;font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;font-family:'Space Grotesk',sans-serif;box-shadow:inset 0 0 20px rgba(123,111,255,0.05)}
+.fib-hint-txt{font-size:12px;color:var(--text3);margin-bottom:10px}
+.fib-inp{width:100%;background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.2);border-radius:10px;padding:12px 16px;font-size:15px;color:var(--text);margin-bottom:10px;outline:none;font-family:inherit;transition:all .2s}
+.fib-inp:focus{border-color:var(--purple);box-shadow:0 0 20px rgba(123,111,255,0.35),inset 0 0 12px rgba(123,111,255,0.05)}
+.fib-inp.ok{border-color:var(--teal);background:rgba(0,255,209,0.05);box-shadow:0 0 20px rgba(0,255,209,0.35),inset 0 0 12px rgba(0,255,209,0.05);color:var(--teal);text-shadow:0 0 8px rgba(0,255,209,0.5)}
+.fib-inp.err{border-color:var(--coral);background:rgba(255,77,109,0.05);box-shadow:0 0 20px rgba(255,77,109,0.35),inset 0 0 12px rgba(255,77,109,0.05);color:var(--coral)}
+.fib-row{display:flex;gap:8px;align-items:center}
+.fib-chk{background:rgba(123,111,255,0.1);border:1px solid rgba(123,111,255,0.45);border-radius:10px;padding:10px 20px;font-size:14px;cursor:pointer;color:var(--purple3);font-family:inherit;transition:all .2s;box-shadow:0 0 10px rgba(123,111,255,0.2)}
+.fib-chk:hover{background:rgba(123,111,255,0.2);box-shadow:0 0 20px rgba(123,111,255,0.5)}
+.fib-show{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:inherit}
+
+/* FORMULA */
+.form-card{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.15);border-radius:16px;padding:18px 20px;margin-bottom:12px;transition:border-color .2s}
+.form-card:hover{border-color:rgba(123,111,255,0.4);box-shadow:0 0 20px rgba(123,111,255,0.1)}
+.form-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px}
+.form-eq{font-size:19px;font-weight:800;color:var(--purple3);margin-bottom:14px;font-family:'Space Grotesk',sans-serif;text-shadow:0 0 20px rgba(123,111,255,0.7),0 0 40px rgba(123,111,255,0.3)}
+.form-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ff label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.ff input,.ff select{width:100%;background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.18);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--text);outline:none;font-family:inherit;transition:all .2s}
+.ff input:focus,.ff select:focus{border-color:var(--purple);box-shadow:0 0 14px rgba(123,111,255,0.4)}
+.ff select option{background:#07071a}
+.form-result{background:rgba(123,111,255,0.08);border:1px solid rgba(123,111,255,0.3);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--purple3);min-height:42px;display:flex;align-items:center;box-shadow:inset 0 0 20px rgba(123,111,255,0.05);text-shadow:0 0 12px rgba(123,111,255,0.6)}
+
+/* ABG */
+.abg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.abg-f label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.abg-f input{width:100%;background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.18);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--text);outline:none;font-family:inherit;transition:all .2s}
+.abg-f input:focus{border-color:var(--purple);box-shadow:0 0 14px rgba(123,111,255,0.4)}
+.abg-result{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.2);border-radius:14px;padding:16px 18px;margin-top:10px;box-shadow:inset 0 0 30px rgba(123,111,255,0.04)}
+.abg-v-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px}
+.abg-verdict{font-size:19px;font-weight:800;margin-bottom:10px;font-family:'Space Grotesk',sans-serif}
+.abg-steps{font-size:13px;color:var(--text2);line-height:1.8}
+.c-acid{color:var(--coral);text-shadow:0 0 16px rgba(255,77,109,0.7)}.c-alk{color:var(--cyan);text-shadow:0 0 16px rgba(0,229,255,0.7)}.c-norm{color:var(--teal);text-shadow:0 0 16px rgba(0,255,209,0.7)}
+
+/* REF */
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ref-c{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.1);border-radius:10px;padding:10px 14px;transition:all .2s}
+.ref-c:hover{border-color:rgba(123,111,255,0.4);box-shadow:0 0 14px rgba(123,111,255,0.15)}
+.ref-n{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.ref-v{font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif}
+.ref-ok{color:var(--teal);text-shadow:0 0 12px rgba(0,255,209,0.6)}.ref-warn{color:var(--amber);text-shadow:0 0 12px rgba(255,159,28,0.6)}.ref-danger{color:var(--coral);text-shadow:0 0 12px rgba(255,77,109,0.6)}
+
+/* SCORE */
+.score-wrap{text-align:center;padding:32px 20px}
+.score-ring{width:120px;height:120px;margin:0 auto 20px;position:relative}
+.score-ring svg{width:100%;height:100%}
+.score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--text)}
+.score-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px}
+.score-sub{font-size:14px;color:var(--text2);margin-bottom:24px}
+.score-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* PROGRESS MODAL */
+.prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.prog-card{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.15);border-radius:14px;padding:16px 18px;box-shadow:inset 0 0 20px rgba(123,111,255,0.03)}
+.prog-card-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.prog-card-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800}
+.c-purple{color:var(--purple3);text-shadow:0 0 20px rgba(123,111,255,0.8)}.c-amber{color:var(--amber);text-shadow:0 0 20px rgba(255,159,28,0.7)}.c-teal{color:var(--teal);text-shadow:0 0 20px rgba(0,255,209,0.7)}
+.room-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(123,111,255,0.06)}
+.room-row:last-child{border-bottom:none}
+.room-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.room-name{font-size:13px;color:var(--text);flex:1;font-weight:500}
+.room-bar{flex:0 0 90px;height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden}
+.room-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.room-pct{font-size:12px;color:var(--text3);width:32px;text-align:right;font-weight:600}
+
+/* SCENARIO */
+.sc-box{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.15);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.sc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.sc-story{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.v-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.v-chip{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.1);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--text3)}
+.v-chip span{display:block;font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif}
+.v-chip.abn{border-color:rgba(255,77,109,0.45);background:rgba(255,77,109,0.06);box-shadow:0 0 10px rgba(255,77,109,0.1)}.v-chip.abn span{color:var(--coral);text-shadow:0 0 10px rgba(255,77,109,0.6)}
+
+/* MATCHER */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.match-col{display:flex;flex-direction:column;gap:6px}
+.match-item{border:1px solid rgba(123,111,255,0.12);background:rgba(3,3,20,0.6);border-radius:10px;padding:10px 14px;font-size:13px;cursor:pointer;color:var(--text);text-align:center;line-height:1.45;transition:all .18s;user-select:none}
+.match-item:hover{border-color:rgba(123,111,255,0.5);background:rgba(123,111,255,0.08);box-shadow:0 0 14px rgba(123,111,255,0.2)}
+.match-item.sel{border-color:var(--purple);background:rgba(123,111,255,0.12);color:var(--purple3);box-shadow:0 0 20px rgba(123,111,255,0.35);text-shadow:0 0 8px rgba(123,111,255,0.6)}
+.match-item.mok{border-color:var(--teal);background:rgba(0,255,209,0.07);color:var(--teal);cursor:default;box-shadow:0 0 16px rgba(0,255,209,0.25);text-shadow:0 0 8px rgba(0,255,209,0.6)}
+.match-item.merr{border-color:var(--coral);background:rgba(255,77,109,0.07);color:var(--coral);box-shadow:0 0 16px rgba(255,77,109,0.2)}
+
+/* TIPS */
+.tip-c{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.12);border-radius:14px;padding:14px 18px;margin-bottom:10px;transition:all .2s}
+.tip-c:hover{border-color:rgba(123,111,255,0.4);box-shadow:0 0 18px rgba(123,111,255,0.1)}
+.tip-t{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;font-family:'Space Grotesk',sans-serif}
+.tip-b{font-size:13px;color:var(--text2);line-height:1.65}
+.tip-b code{background:rgba(123,111,255,0.15);border:1px solid rgba(123,111,255,0.3);border-radius:4px;padding:2px 6px;font-size:12px;color:var(--purple3);font-family:'Space Grotesk',sans-serif;text-shadow:0 0 8px rgba(123,111,255,0.6)}
+
+/* NOTIFICATION */
+#notif{position:fixed;top:72px;right:16px;z-index:300;background:rgba(5,5,20,0.95);border:1px solid rgba(123,111,255,0.35);border-radius:14px;padding:12px 18px;font-size:13px;color:var(--text);max-width:240px;opacity:0;transform:translateX(20px);transition:all .35s cubic-bezier(.25,.46,.45,.94);pointer-events:none;backdrop-filter:blur(20px);box-shadow:0 0 30px rgba(123,111,255,0.25),0 0 60px rgba(123,111,255,0.1)}
+#notif.show{opacity:1;transform:translateX(0)}
+#notif .nt{font-weight:700;color:var(--gold);margin-bottom:3px;font-size:13px;text-shadow:0 0 12px rgba(255,230,0,0.7)}
+
+/* DECISION */
+.dec-card{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.1);border-radius:14px;padding:16px 18px;margin-bottom:10px;position:relative;overflow:hidden;transition:all .2s}
+.dec-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px}
+.dec-card.purple::before{background:var(--purple);box-shadow:0 0 12px var(--purple),0 0 24px rgba(123,111,255,0.5)}.dec-card.purple:hover{border-color:rgba(123,111,255,0.3);box-shadow:0 0 20px rgba(123,111,255,0.1)}
+.dec-card.teal::before{background:var(--teal);box-shadow:0 0 12px var(--teal),0 0 24px rgba(0,255,209,0.4)}.dec-card.teal:hover{border-color:rgba(0,255,209,0.25);box-shadow:0 0 20px rgba(0,255,209,0.08)}
+.dec-card.coral::before{background:var(--coral);box-shadow:0 0 12px var(--coral),0 0 24px rgba(255,77,109,0.4)}.dec-card.coral:hover{border-color:rgba(255,77,109,0.25);box-shadow:0 0 20px rgba(255,77,109,0.08)}
+.dec-card.amber::before{background:var(--amber);box-shadow:0 0 12px var(--amber),0 0 24px rgba(255,159,28,0.4)}.dec-card.amber:hover{border-color:rgba(255,159,28,0.25);box-shadow:0 0 20px rgba(255,159,28,0.08)}
+.dec-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;padding-left:12px;font-family:'Space Grotesk',sans-serif}
+.dec-body{font-size:13px;color:var(--text2);line-height:1.7;padding-left:12px;white-space:pre-line}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+/* FOOTER */
+footer{position:relative;z-index:1;text-align:center;padding:48px 24px;border-top:1px solid rgba(255,255,255,0.04)}
+footer p{font-size:13px;color:var(--text3)}
+footer strong{color:var(--text2);font-weight:600}
+
+@media(max-width:600px){
+  .room-grid{grid-template-columns:1fr}
+  .form-inputs{grid-template-columns:1fr}
+  .abg-grid{grid-template-columns:1fr}
+  .match-wrap{grid-template-columns:1fr}
+  .prog-grid{grid-template-columns:1fr}
+  .v-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-stats{gap:20px}
+  nav{padding:10px 14px}
+  .xp-pill,.badge-pill{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">🫁</div>
+    RCARE-101
+  </a>
+  <div class="nav-spacer"></div>
+  <div id="xp-nav">
+    <div class="xp-pill" id="xp-pill">0 XP</div>
+    <div class="lvl-pill" id="lvl-pill">Level 1</div>
+    <div class="badge-pill" id="badge-pill">⭐ 0</div>
+    <button class="nav-prog-btn" onclick="openProgress()">Progress</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <svg class="hero-lungs" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g class="lung-breath">
+      <!-- trachea -->
+      <line x1="100" y1="10" x2="100" y2="50" stroke="rgba(108,99,255,0.6)" stroke-width="3" stroke-linecap="round"/>
+      <!-- left bronchus -->
+      <path class="lung-path" d="M100 50 Q70 55 55 70 Q38 90 36 115 Q34 135 48 140 Q62 144 68 128 Q72 114 70 95 Q68 76 82 68" stroke="rgba(108,99,255,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <!-- right bronchus -->
+      <path class="lung-path" d="M100 50 Q130 55 145 70 Q162 90 164 115 Q166 135 152 140 Q138 144 132 128 Q128 114 130 95 Q132 76 118 68" stroke="rgba(0,212,170,0.7)" stroke-width="2.5" stroke-linecap="round" fill="none" style="animation-delay:0.3s"/>
+      <!-- left lung outline -->
+      <path class="lung-path" d="M55 70 Q28 90 26 120 Q24 148 50 152 Q72 156 78 130 Q84 104 80 78" stroke="rgba(108,99,255,0.4)" stroke-width="1.5" stroke-linecap="round" fill="rgba(108,99,255,0.05)" style="animation-delay:0.6s"/>
+      <!-- right lung outline -->
+      <path class="lung-path" d="M145 70 Q172 90 174 120 Q176 148 150 152 Q128 156 122 130 Q116 104 120 78" stroke="rgba(0,212,170,0.4)" stroke-width="1.5" stroke-linecap="round" fill="rgba(0,212,170,0.05)" style="animation-delay:0.9s"/>
+      <!-- glow circles for alveoli -->
+      <circle cx="50" cy="118" r="10" fill="rgba(108,99,255,0.12)" stroke="rgba(108,99,255,0.3)" stroke-width="1"/>
+      <circle cx="40" cy="135" r="8" fill="rgba(108,99,255,0.1)" stroke="rgba(108,99,255,0.25)" stroke-width="1"/>
+      <circle cx="64" cy="132" r="8" fill="rgba(108,99,255,0.1)" stroke="rgba(108,99,255,0.25)" stroke-width="1"/>
+      <circle cx="150" cy="118" r="10" fill="rgba(0,212,170,0.1)" stroke="rgba(0,212,170,0.3)" stroke-width="1"/>
+      <circle cx="160" cy="135" r="8" fill="rgba(0,212,170,0.08)" stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+      <circle cx="136" cy="132" r="8" fill="rgba(0,212,170,0.08)" stroke="rgba(0,212,170,0.25)" stroke-width="1"/>
+    </g>
+  </svg>
+
+  <div class="hero-eyebrow">
+    <div class="hero-eyebrow-dot"></div>
+    Fresno City College · Mr. Mendoza
+  </div>
+
+  <h1 class="hero-h1">
+    Respiratory Therapy<br/>
+    <span class="grad">Mastery School</span>
+  </h1>
+
+  <p class="hero-sub">
+    An interactive learning environment covering all RCARE-101 content — normal values, ABG interpretation, ventilation formulas, clinical cases, and NBRC-style thinking.
+  </p>
+
+  <div class="hero-cta-row">
+    <button class="btn-primary" onclick="document.getElementById('rooms').scrollIntoView({behavior:'smooth'})">
+      Start Learning ↓
+    </button>
+    <button class="btn-secondary" onclick="openProgress()">
+      View Progress
+    </button>
+  </div>
+
+  <div class="hero-stats">
+    <div class="h-stat"><div class="h-stat-n" id="stat-rooms">13</div><div class="h-stat-l">Rooms</div></div>
+    <div class="h-stat"><div class="h-stat-n">75+</div><div class="h-stat-l">Flashcards</div></div>
+    <div class="h-stat"><div class="h-stat-n">15+</div><div class="h-stat-l">Case Questions</div></div>
+    <div class="h-stat"><div class="h-stat-n">XP</div><div class="h-stat-l">Progress Tracking</div></div>
+  </div>
+
+  <div class="hero-scroll"><span>scroll</span><div class="scroll-arrow"></div></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROOMS -->
+<section id="rooms" class="section">
+  <div class="section-inner">
+    <div class="section-label reveal">Study Rooms</div>
+    <h2 class="section-h2 reveal reveal-delay-1">Choose your <em>classroom</em></h2>
+    <p class="section-sub reveal reveal-delay-2">Each room covers a specific topic. Walk in, earn XP, and track your mastery progress as you go.</p>
+
+    <div class="room-grid" id="room-grid"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section class="section">
+  <div class="section-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+    <div>
+      <div class="section-label reveal">NBRC Thinking Model</div>
+      <h2 class="section-h2 reveal reveal-delay-1">Three layers of <em>clinical mastery</em></h2>
+      <p class="section-sub reveal reveal-delay-2" style="margin-bottom:24px">This course follows the 2027 NBRC thinking framework. All activities are designed to push you toward Layer 3.</p>
+      <div class="reveal reveal-delay-2">
+        <div class="dec-card purple" style="margin-bottom:10px"><div class="dec-title">Layer 1 — Know It</div><div class="dec-body">Recall normal values, formulas, and definitions. The baseline every RT must have.</div></div>
+        <div class="dec-card teal" style="margin-bottom:10px"><div class="dec-title">Layer 2 — Apply It</div><div class="dec-body">Use those values in a specific patient situation. Calculate VE, VA, P/F ratio, CaO₂.</div></div>
+        <div class="dec-card coral"><div class="dec-title">Layer 3 — Decide With It</div><div class="dec-body">Determine if you should recommend, monitor, change, or escalate care. This is the hallmark of the RRT.</div></div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:20px;padding:28px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(108,99,255,0.2),transparent 70%);border-radius:50%"></div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:20px">AIDR Framework</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;background:rgba(108,99,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--purple3);flex-shrink:0;font-family:'Space Grotesk',sans-serif">A</div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text)">Assess</div><div style="font-size:12px;color:var(--text3)">Collect data — vitals, breath sounds, math</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;background:rgba(0,212,170,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--teal);flex-shrink:0;font-family:'Space Grotesk',sans-serif">I</div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text)">Interpret</div><div style="font-size:12px;color:var(--text3)">What do the numbers mean clinically?</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;background:rgba(255,107,107,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--coral);flex-shrink:0;font-family:'Space Grotesk',sans-serif">D</div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text)">Decide</div><div style="font-size:12px;color:var(--text3)">Most dangerous problem — what do I recommend?</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;background:rgba(255,179,71,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--amber);flex-shrink:0;font-family:'Space Grotesk',sans-serif">R</div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text)">Reassess</div><div style="font-size:12px;color:var(--text3)">Confirm the intervention actually worked</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<footer>
+  <p>Built for <strong>RCARE-101</strong> · Fresno City College · Mr. Mendoza</p>
+  <p style="margin-top:6px;font-size:12px">Progress is saved automatically in your browser.</p>
+</footer>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div class="modal-drag"></div>
+    <div id="modal-header">
+      <div class="modal-icon-wrap" id="modal-icon-wrap"><span id="modal-icon">📚</span></div>
+      <div><div id="modal-title">Room</div><div id="modal-sub"></div></div>
+      <button id="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div id="notif"><div class="nt" id="notif-t"></div><div id="notif-m"></div></div>
+
+<script>
+/* ── DATA ── */
+const CARDS=[
+{tag:'Normal values',q:'Normal Respiratory Rate (RR)?',a:'12–18 breaths/min'},
+{tag:'Normal values',q:'Normal Tidal Volume (VT)?',a:'6 mL/kg PBW (range 5–7)'},
+{tag:'Normal values',q:'Normal Minute Ventilation (VE)?',a:'5–10 L/min (~100 mL/kg PBW/min)'},
+{tag:'Normal values',q:'Normal PaCO₂?',a:'35–45 mmHg — the ventilation marker'},
+{tag:'Normal values',q:'Normal PaO₂?',a:'80–100 mmHg — the oxygenation marker'},
+{tag:'Normal values',q:'Normal arterial pH?',a:'7.35–7.45'},
+{tag:'Normal values',q:'Normal HCO₃⁻?',a:'22–26 mEq/L — metabolic/renal marker'},
+{tag:'Normal values',q:'Normal SaO₂/SpO₂?',a:'95–100%'},
+{tag:'Normal values',q:'P/F ratio: normal vs impairment?',a:'Normal > 350; impairment < 300; ARDS < 200'},
+{tag:'Normal values',q:'Normal CaO₂?',a:'17–20 mL/dL (Vol%)'},
+{tag:'Normal values',q:'Normal A–a gradient on room air?',a:'5–10 mmHg (increases with age & higher FiO₂)'},
+{tag:'Normal values',q:'Normal VD/VT ratio?',a:'0.2–0.4 (~30% wasted ventilation per breath)'},
+{tag:'Vital signs',q:'Normal adult heart rate?',a:'60–100 beats/min'},
+{tag:'Vital signs',q:'Tachycardia vs bradycardia?',a:'Tachycardia > 100/min; Bradycardia < 60/min'},
+{tag:'Vital signs',q:'Tachypnea vs bradypnea?',a:'Tachypnea > 20/min; Bradypnea < 10/min'},
+{tag:'Vital signs',q:'Normal body temperature?',a:'37°C (98.6°F); fever > 38.3°C (101°F)'},
+{tag:'Vital signs',q:'Normal blood pressure?',a:'Systolic < 120; Diastolic < 80 mmHg'},
+{tag:'Vital signs',q:'What is Pulsus Paradoxus?',a:'BP drops >10 mmHg on inspiration — COPD/severe asthma'},
+{tag:'Vital signs',q:'What is Pulsus Alternans?',a:'Alternating strong/weak pulses — left heart failure'},
+{tag:'Vital signs',q:'Stage 1 vs Stage 2 Hypertension?',a:'Stage 1: 130–139/80–89; Stage 2: > 140/90 mmHg'},
+{tag:'Formula',q:'Formula for VE (Minute Ventilation)?',a:'VE = RR × VT'},
+{tag:'Formula',q:'Formula for VA (Alveolar Ventilation)?',a:'VA = (VT − VD) × RR'},
+{tag:'Formula',q:'Formula for CaO₂?',a:'(Hb × 1.34 × SaO₂) + (PaO₂ × 0.003)'},
+{tag:'Formula',q:'P/F Ratio formula?',a:'PaO₂ ÷ FiO₂'},
+{tag:'Formula',q:'Simplified alveolar air equation (room air)?',a:'PAO₂ = 150 − (1.25 × PaCO₂)'},
+{tag:'Formula',q:'A–a Gradient formula?',a:'PAO₂ − PaO₂'},
+{tag:'Formula',q:'PBW — males?',a:'50 + 2.3 × (height in inches − 60) kg'},
+{tag:'Formula',q:'PBW — females?',a:'45.5 + 2.3 × (height in inches − 60) kg'},
+{tag:'ABG',q:'pH < 7.35 means?',a:'Acidemia'},
+{tag:'ABG',q:'pH > 7.45 means?',a:'Alkalemia'},
+{tag:'ABG',q:'PaCO₂ > 45 + low pH?',a:'Respiratory acidosis (hypoventilation)'},
+{tag:'ABG',q:'PaCO₂ < 35 + high pH?',a:'Respiratory alkalosis (hyperventilation)'},
+{tag:'ABG',q:'HCO₃⁻ < 22?',a:'Metabolic acidosis'},
+{tag:'ABG',q:'HCO₃⁻ > 26?',a:'Metabolic alkalosis'},
+{tag:'ABG',q:'Normal HCO₃ with abnormal pH and CO₂?',a:'Acute uncompensated respiratory disturbance'},
+{tag:'ABG',q:'4 steps of ABG interpretation?',a:'1. pH → 2. PaCO₂ → 3. HCO₃ → 4. PaO₂'},
+{tag:'ABG',q:'ABG pH 7.22, PaCO₂ 60, HCO₃ 24, PaO₂ 78?',a:'Acute respiratory acidosis with hypoxemia'},
+{tag:'ABG',q:'ABG pH 7.48, PaCO₂ 30, HCO₃ 23, PaO₂ 58?',a:'Respiratory alkalosis with hypoxemia'},
+{tag:'Decision',q:'Markers of Oxygenation Failure?',a:'Low PaO₂, Low SpO₂, Low P/F ratio, High A–a gradient'},
+{tag:'Decision',q:'Markers of Ventilation Failure?',a:'High PaCO₂, Low pH (acute), Low VA, High WOB'},
+{tag:'Decision',q:'RT response to oxygenation failure?',a:'Increase FiO₂, apply PEEP/CPAP, reposition'},
+{tag:'Decision',q:'RT response to ventilation failure?',a:'Increase ventilation, consider NIV or intubate'},
+{tag:'Decision',q:'4-step RT clinical framework?',a:'Assess → Interpret → Decide → Reassess'},
+{tag:'Decision',q:'3 NBRC thinking layers?',a:'Know It → Apply It → Decide With It'},
+{tag:'Lab values',q:'Normal Hemoglobin (Hb)?',a:'12–16 g/dL'},
+{tag:'Lab values',q:'Normal Hematocrit (Hct)?',a:'40–50%'},
+{tag:'Lab values',q:'Normal WBC count?',a:'5,000–10,000/mm³'},
+{tag:'Lab values',q:'Leukocytosis vs leukopenia?',a:'High WBC → bacterial infection; Low WBC → viral infection'},
+{tag:'Lab values',q:'Normal K⁺?',a:'3.5–4.5 mEq/L'},
+{tag:'Lab values',q:'Normal Na⁺?',a:'135–145 mEq/L'},
+{tag:'Lab values',q:'Normal Cl⁻?',a:'90–100 mEq/L'},
+{tag:'Lab values',q:'Normal Creatinine?',a:'0.7–1.3 mg/dL (kidney function)'},
+{tag:'Lab values',q:'Normal BUN?',a:'8–25 mg/dL (kidney function)'},
+{tag:'Lab values',q:'Hb carries how much O₂ per gram?',a:'1.34 mL O₂ per gram of hemoglobin'},
+{tag:'Ventilator',q:'Acceptable VT for mechanical ventilation?',a:'4–8 mL/kg PBW; initial target 6–8 mL/kg'},
+{tag:'Ventilator',q:'ARDS VT and RR targets?',a:'VT 4–8 mL/kg PBW; RR 25–35/min'},
+{tag:'Ventilator',q:'Target plateau pressure (Pplat)?',a:'< 30 cm H₂O'},
+{tag:'Ventilator',q:'Target driving pressure?',a:'≤ 15 cm H₂O'},
+{tag:'Ventilator',q:'Initial ventilator RR?',a:'12–16 breaths/min'},
+{tag:'Ventilator',q:'pH goal on ventilator?',a:'7.30–7.45'},
+{tag:'Ventilator',q:'O₂-induced hypoventilation risk?',a:'COPD patients on high FiO₂ — may lose hypoxic drive → CO₂ retention + CNS depression'},
+];
+
+const QUIZ=[
+{cat:'Know It',q:'A patient has RR 18/min and VT 500 mL. Minute Ventilation?',opts:['7.2 L/min','9.0 L/min','8.5 L/min','6.0 L/min'],ans:1,exp:'VE = 18 × 0.5 = 9.0 L/min. Normal range is 5–10 L/min.'},
+{cat:'Know It',q:'Normal arterial pH range?',opts:['7.30–7.40','7.35–7.45','7.40–7.50','7.25–7.45'],ans:1,exp:'7.35–7.45. Below = acidemia; above = alkalemia.'},
+{cat:'Know It',q:'P/F ratio formula?',opts:['PaCO₂ ÷ FiO₂','PaO₂ − PaCO₂','PaO₂ ÷ FiO₂','FiO₂ × PaO₂'],ans:2,exp:'P/F = PaO₂ ÷ FiO₂. Normal > 350. < 300 = impairment. < 200 = ARDS.'},
+{cat:'Know It',q:'Why use PBW instead of actual weight for VT?',opts:['Easier to calculate','Lung size correlates with height and sex, not weight','Actual weight triggers alarms','PBW includes BMI correction'],ans:1,exp:'Lungs do not grow with body fat. Using actual weight in obese patients causes volutrauma (lung overdistension).'},
+{cat:'Know It',q:'Normal A–a gradient on room air?',opts:['0–2 mmHg','5–10 mmHg','15–25 mmHg','> 30 mmHg'],ans:1,exp:'Normal A–a = 5–10 mmHg. Elevated = gas exchange defect (shunt or V/Q mismatch).'},
+{cat:'Apply It',q:'Patient on FiO₂ 60% has PaO₂ 90 mmHg. P/F ratio?',opts:['54','150','90','200'],ans:1,exp:'P/F = 90 ÷ 0.60 = 150. Below the 300 threshold — significant oxygenation failure.'},
+{cat:'Apply It',q:'ABG: pH 7.28, PaCO₂ 58, HCO₃ 24. Interpretation?',opts:['Metabolic acidosis','Respiratory alkalosis','Acute respiratory acidosis','Metabolic alkalosis'],ans:2,exp:'pH 7.28 = acidemia. PaCO₂ 58 (> 45) = respiratory acidosis. HCO₃ 24 = normal, no renal compensation yet. Acute.'},
+{cat:'Apply It',q:'RR 24, VT 300 mL, VD 200 mL. Alveolar ventilation?',opts:['2.4 L/min','7.2 L/min','4.8 L/min','1.2 L/min'],ans:0,exp:'VA = (300−200) × 24 = 2,400 mL/min = 2.4 L/min. Classic Breathing Pattern Trap — normal VE, critically low VA.'},
+{cat:'Apply It',q:'PAO₂ simplified (room air, PaCO₂ = 40)?',opts:['110 mmHg','150 mmHg','100 mmHg','140 mmHg'],ans:2,exp:'PAO₂ = 150 − (1.25 × 40) = 100 mmHg. Normal at sea level on room air.'},
+{cat:'Decide',q:'Patient: lethargic, RR 8, PaCO₂ 68, pH 7.22. Priority?',opts:['Increase FiO₂ only','Reposition patient','Urgently consider NIV or intubation','Apply PEEP and monitor'],ans:2,exp:'Lethargy + high CO₂ + severe acidemia + low RR = ventilation failure with impending arrest. Escalate immediately.'},
+{cat:'Decide',q:'Elevated A–a gradient indicates?',opts:['Normal gas exchange','Pure hypoventilation only','V/Q mismatch or shunt','Metabolic compensation'],ans:2,exp:'Elevated A–a = O₂ in the alveoli but not reaching the blood. Classic shunt or V/Q mismatch — NOT pure hypoventilation.'},
+{cat:'Decide',q:'COPD patient on high FiO₂ becomes lethargic. Why?',opts:['Fever from infection','O₂-induced hypoventilation — loss of hypoxic drive','CO₂ directly toxic to brain','Metabolic alkalosis from O₂'],ans:1,exp:'COPD patients with chronic hypercapnia may rely on hypoxic drive. High FiO₂ removes that drive → CO₂ retention → CNS depression.'},
+{cat:'Decide',q:'After NIV for hypercapnia, what confirms improvement?',opts:['SpO₂ alone','RR only','Repeat ABG + mental status + WOB + SpO₂','Only pH'],ans:2,exp:'Comprehensive reassessment: PaCO₂ trending down on ABG, clearing mentation, decreased WOB, stable SpO₂.'},
+];
+
+const SCENARIOS=[
+{title:'COPD exacerbation',story:'68-year-old male with known COPD presents confused with increased work of breathing. Wife reports 2 days of fatigue and skipped inhalers.',
+vitals:[{l:'RR',v:'28/min',a:1},{l:'SpO₂',v:'88%',a:1},{l:'pH',v:'7.24',a:1},{l:'PaCO₂',v:'72 mmHg',a:1},{l:'PaO₂',v:'52 mmHg',a:1},{l:'HCO₃⁻',v:'28',a:0}],
+questions:[
+{q:'Primary acid-base disturbance?',opts:['Metabolic acidosis','Acute-on-chronic resp. acidosis','Respiratory alkalosis','Compensated met. alkalosis'],ans:1,exp:'pH 7.24 = acidemia. PaCO₂ 72 = resp. acidosis. HCO₃ 28 (slightly elevated) = partial metabolic compensation. Chronic + acute flare.'},
+{q:'Oxygenation failure, ventilation failure, or both?',opts:['Oxygenation only','Ventilation only','Both','Neither'],ans:2,exp:'PaO₂ 52 + SpO₂ 88% = oxygenation failure. PaCO₂ 72 + pH 7.24 = ventilation failure. Both systems failing simultaneously.'},
+{q:'Most immediately life-threatening problem?',opts:['High RR needs sedation','Ventilation failure with confusion — arrest risk','Low SpO₂ only — increase FiO₂','Treat metabolic alkalosis'],ans:1,exp:'Confusion + severe hypercapnia + acidemia = tiring out. BiPAP/NIV first-line. Do NOT give high FiO₂ without monitoring — O₂-induced hypoventilation risk.'},
+{q:'After BiPAP, what confirms improvement?',opts:['SpO₂ ≥ 95% alone','Mental status improving AND PaCO₂ trending down','RR normalizing to 18/min','Any one of these'],ans:1,exp:'True improvement: clearing mentation, PaCO₂ trending down on repeat ABG (30–60 min), decreased WOB, stable pH. SpO₂ alone is insufficient.'},
+]},
+{title:'Severe pneumonia / ARDS',story:'45-year-old woman, bilateral pneumonia 4 days. On high-flow O₂ at FiO₂ 70%. Anxious, accessory muscle use, bilateral crackles.',
+vitals:[{l:'RR',v:'32/min',a:1},{l:'SpO₂',v:'91%',a:1},{l:'FiO₂',v:'0.70',a:1},{l:'pH',v:'7.48',a:1},{l:'PaCO₂',v:'30 mmHg',a:1},{l:'PaO₂',v:'63 mmHg',a:1}],
+questions:[
+{q:'Calculate P/F ratio — what does it mean?',opts:['P/F = 90 — severe oxygenation failure','P/F = 150 — moderate failure','P/F = 210 — mild impairment','P/F = 63 — use PaO₂ directly'],ans:0,exp:'P/F = 63 ÷ 0.70 = 90. P/F < 100 = severe ARDS. Cannot be solved by increasing FiO₂ alone.'},
+{q:'pH 7.48, PaCO₂ 30 — interpretation?',opts:['Hypoventilating','Metabolic acidosis from sepsis','Respiratory alkalosis — hyperventilating from hypoxemia','Compensated met. alkalosis'],ans:2,exp:'PaCO₂ 30 < 35 = resp. alkalosis. She is hyperventilating (RR 32) as a response to severe hypoxemia. Warning sign — working dangerously hard.'},
+{q:'Best RT intervention?',opts:['Decrease FiO₂','Apply PEEP/CPAP; prepare for intubation','Start bronchodilators','Increase RR target'],ans:1,exp:'PEEP recruits collapsed alveoli, improves V/Q matching. With P/F = 90 + high WOB, likely needs intubation with VT 6 mL/kg PBW and Pplat < 30 cm H₂O.'},
+]},
+{title:'Metabolic acidosis + compensation',story:'55-year-old diabetic with Kussmaul respirations (deep, rapid), nausea, and altered mental status. Blood glucose 480 mg/dL.',
+vitals:[{l:'RR',v:'26/min',a:1},{l:'SpO₂',v:'97%',a:0},{l:'pH',v:'7.18',a:1},{l:'PaCO₂',v:'22 mmHg',a:1},{l:'PaO₂',v:'94 mmHg',a:0},{l:'HCO₃⁻',v:'8 mEq/L',a:1}],
+questions:[
+{q:'Primary acid-base disturbance?',opts:['Respiratory acidosis','Respiratory alkalosis','Metabolic acidosis + respiratory compensation','Metabolic alkalosis'],ans:2,exp:'pH 7.18 = severe acidemia. HCO₃ 8 (< 22) = primary metabolic acidosis. PaCO₂ 22 (< 35) = lungs compensating by blowing off CO₂. Classic DKA.'},
+{q:'Kussmaul breathing represents?',opts:['Anxiety hyperventilation','Lung disease','Compensatory resp. alkalosis to correct metabolic acidosis','Worsening respiratory acidosis'],ans:2,exp:'Kussmaul = body blowing off CO₂ to raise pH. This is HELPFUL compensation. Do NOT suppress the RR or sedate without airway management — pH will plummet.'},
+{q:'RT priority in this patient?',opts:['Intubate immediately','Increase FiO₂ — oxygenation is main problem','Monitor work of breathing — patient may tire out','Apply PEEP for oxygenation failure'],ans:2,exp:'PaO₂ 94 + SpO₂ 97% — oxygenation is fine. Danger = respiratory fatigue. If patient stops compensating, pH plummets. Monitor WOB and be ready to support ventilation.'},
+]},
+];
+
+const FIBS=[
+{cat:'Formula',prompt:'VE = ___ × ___',ans:['rr × vt','rr x vt','vt × rr'],display:'RR × VT',hint:'Rate × Volume'},
+{cat:'Formula',prompt:'VA = (VT − ___) × RR',ans:['vd'],display:'VD',hint:'Dead space is subtracted'},
+{cat:'Formula',prompt:'CaO₂ = (Hb × ___ × SaO₂) + (PaO₂ × ___)',ans:['1.34, 0.003','1.34 and 0.003'],display:'1.34 and 0.003',hint:'Binding constant, dissolved coefficient'},
+{cat:'Formula',prompt:'PAO₂ = 150 − (___ × PaCO₂)',ans:['1.25'],display:'1.25',hint:'Simplified alveolar air equation constant'},
+{cat:'Normal value',prompt:'Normal pH: ___ to ___',ans:['7.35 to 7.45','7.35-7.45'],display:'7.35–7.45',hint:'Acidemia below, alkalemia above'},
+{cat:'Normal value',prompt:'Normal PaCO₂: ___ to ___ mmHg',ans:['35 to 45','35-45'],display:'35–45',hint:'Lung-controlled respiratory marker'},
+{cat:'Normal value',prompt:'Normal HCO₃⁻: ___ to ___ mEq/L',ans:['22 to 26','22-26'],display:'22–26',hint:'Kidney-controlled metabolic marker'},
+{cat:'Normal value',prompt:'Normal PaO₂: ___ to ___ mmHg',ans:['80 to 100','80-100'],display:'80–100',hint:'Arterial oxygenation'},
+{cat:'Normal value',prompt:'P/F impairment threshold: < ___',ans:['300'],display:'300',hint:'Normal is > 350'},
+{cat:'ABG',prompt:'PaCO₂ > 45 + low pH = respiratory ___',ans:['acidosis'],display:'acidosis',hint:'Hypoventilation → CO₂ retention'},
+{cat:'ABG',prompt:'HCO₃⁻ < 22 = metabolic ___',ans:['acidosis'],display:'acidosis',hint:'Kidneys/bicarbonate low'},
+{cat:'ABG',prompt:'HCO₃⁻ > 26 = metabolic ___',ans:['alkalosis'],display:'alkalosis',hint:'Too much bicarbonate'},
+{cat:'Lab',prompt:'Normal Hb: ___ to ___ g/dL',ans:['12 to 16','12-16'],display:'12–16',hint:'Low = anemia; High = polycythemia'},
+{cat:'Lab',prompt:'Hb carries ___ mL O₂ per gram',ans:['1.34'],display:'1.34',hint:'Constant in the CaO₂ formula'},
+{cat:'Vital signs',prompt:'Fever = temperature > ___ °C',ans:['38.3'],display:'38.3°C',hint:'Normal is 37°C (98.6°F)'},
+];
+
+const MATCH_SETS=[
+{title:'ABG findings → condition',pairs:[
+{l:'pH↓, PaCO₂↑, HCO₃ normal',r:'Acute resp. acidosis'},
+{l:'pH↓, PaCO₂↑, HCO₃↑',r:'Chronic resp. acidosis (COPD)'},
+{l:'pH↑, PaCO₂↓, HCO₃ normal',r:'Acute resp. alkalosis'},
+{l:'pH↓, HCO₃↓, PaCO₂↓',r:'Metabolic acidosis + compensation'},
+{l:'Low PaO₂, high A–a gradient',r:'Shunt / V/Q mismatch'},
+]},
+{title:'Vital sign → clinical term',pairs:[
+{l:'RR > 20/min',r:'Tachypnea'},
+{l:'HR > 100/min',r:'Tachycardia'},
+{l:'BP drop >10 mmHg on inspiration',r:'Pulsus paradoxus'},
+{l:'Alternating strong/weak pulses',r:'Pulsus alternans'},
+{l:'RR < 10/min',r:'Bradypnea'},
+]},
+];
+
+const REF=[
+{n:'RR',v:'12–18/min',c:'ref-ok'},{n:'VT',v:'6 mL/kg PBW',c:'ref-ok'},{n:'VE',v:'5–10 L/min',c:'ref-ok'},
+{n:'PaCO₂',v:'35–45 mmHg',c:'ref-ok'},{n:'PaO₂',v:'80–100 mmHg',c:'ref-ok'},{n:'pH',v:'7.35–7.45',c:'ref-ok'},
+{n:'HCO₃⁻',v:'22–26 mEq/L',c:'ref-ok'},{n:'SpO₂',v:'95–100%',c:'ref-ok'},{n:'CaO₂',v:'17–20 mL/dL',c:'ref-ok'},
+{n:'A–a gradient',v:'5–10 mmHg',c:'ref-ok'},{n:'P/F normal',v:'> 350',c:'ref-ok'},{n:'P/F impairment',v:'< 300',c:'ref-warn'},
+{n:'P/F ARDS',v:'< 200',c:'ref-danger'},{n:'pH acidemia',v:'< 7.35',c:'ref-danger'},{n:'pH alkalemia',v:'> 7.45',c:'ref-warn'},
+{n:'PaCO₂ resp acid',v:'> 45 mmHg',c:'ref-danger'},{n:'HCO₃ met acid',v:'< 22 mEq/L',c:'ref-danger'},{n:'Hb',v:'12–16 g/dL',c:'ref-ok'},
+{n:'WBC',v:'5,000–10,000',c:'ref-ok'},{n:'K⁺',v:'3.5–4.5 mEq/L',c:'ref-ok'},{n:'Na⁺',v:'135–145 mEq/L',c:'ref-ok'},
+{n:'Pplat',v:'< 30 cm H₂O',c:'ref-ok'},{n:'Driving P',v:'≤ 15 cm H₂O',c:'ref-ok'},{n:'Creatinine',v:'0.7–1.3 mg/dL',c:'ref-ok'},
+];
+
+const TIPS=[
+{t:'Spaced repetition — the #1 method',b:'Review at increasing intervals: today → tomorrow → 3 days → 1 week. Use flashcard "Got it / Again" buttons. Brain consolidates during sleep — review before bed.'},
+{t:'Active recall beats re-reading',b:'Re-reading feels productive but doesn\'t build retrieval pathways. Type answers in fill-in-blank. Struggling to retrieve — even if wrong — strengthens memory more than reading.'},
+{t:'Do the math every day',b:'Write <code>VE = RR × VT</code>, <code>VA = (VT − VD) × RR</code>, and <code>CaO₂ = (Hb × 1.34 × SaO₂) + (PaO₂ × 0.003)</code> from memory daily until automatic.'},
+{t:'Teach it back (Feynman technique)',b:'After studying, explain the concept out loud as if teaching a patient\'s family. If you stumble, re-learn that card. "PaCO₂ tells us how well you breathe out CO₂..."'},
+{t:'Think in clinical frames always',b:'For every value, ask: "What would I do if this were abnormal?" PaCO₂ 55 → resp. acidosis → increase ventilation. P/F 150 → oxygenation failure → PEEP.'},
+{t:'The "closing the laptop" test',b:'After studying, write from memory every formula, normal value, and decision rule. What you cannot write, you do not actually know yet.'},
+{t:'AIDR for every patient',b:'<code>Assess → Interpret → Decide → Reassess</code>. Never skip Reassess — it confirms your intervention actually worked.'},
+{t:'3 layers, push to Layer 3',b:'Layer 1: Know It. Layer 2: Apply It. Layer 3: Decide With It. The NBRC tests Layers 2 and 3 almost exclusively. Push past recall every session.'},
+{t:'Acronym anchors',b:'Oxygenation failure: <code>LSP-H</code> = Low PaO₂, Low SpO₂, Poor P/F, High A–a. Ventilation failure: <code>High CO₂, Low pH, Low VA</code>. Make your own.'},
+{t:'10 focused minutes beats 2 hours weekly',b:'Daily routine: 5 min flashcards → 3 min fill-in-blank → 2 min mental ABG run. Consistency is the mechanism of mastery.'},
+];
+
+/* ── ROOMS ── */
+const ROOMS=[
+{id:'flashcards',name:'Flashcard Library',icon:'🃏',color:'#6C63FF',tag:'All Topics',tagClass:'badge-purple',desc:'75+ shuffled cards covering every RCARE-101 concept',xp:'+75 XP'},
+{id:'quiz',name:'Exam Hall',icon:'📝',color:'#FF6B6B',tag:'NBRC-Style',tagClass:'badge-red',desc:'Clinical MCQ quiz with Know It → Apply It → Decide With It questions',xp:'+130 XP'},
+{id:'scenarios',name:'Patient Simulation Bay',icon:'🛏️',color:'#1D9E75',tag:'Clinical Cases',tagClass:'badge-teal',desc:'3 full patient cases — COPD exacerbation, ARDS, and DKA',xp:'+100 XP'},
+{id:'fib',name:'Fill-in-the-Blank Lab',icon:'✏️',color:'#185FA5',tag:'Active Recall',tagClass:'badge-purple',desc:'Type formulas and values from memory — the most powerful study mode',xp:'+75 XP'},
+{id:'formulas',name:'Formula Calculator',icon:'🧮',color:'#854F0B',tag:'Math Practice',tagClass:'badge-amber',desc:'Live calculators for VE, VA, CaO₂, P/F ratio, PAO₂, and PBW',xp:'+40 XP'},
+{id:'abg',name:'ABG Interpreter',icon:'🩸',color:'#993C1D',tag:'4-Step Method',tagClass:'badge-red',desc:'Enter any ABG and get instant step-by-step clinical interpretation',xp:'+30 XP'},
+{id:'vitals',name:'Vital Signs Room',icon:'💓',color:'#993556',tag:'Vital Signs',tagClass:'badge-purple',desc:'Normal ranges, abnormal patterns, Pulsus Paradoxus, and Alternans',xp:'+40 XP'},
+{id:'clinical',name:'Clinical Decision Suite',icon:'🏥',color:'#0F6E56',tag:'Decision Making',tagClass:'badge-teal',desc:'Oxygenation vs ventilation failure — the core RT clinical framework',xp:'+20 XP'},
+{id:'match',name:'Matching Lab',icon:'🔗',color:'#854F0B',tag:'Pattern Matching',tagClass:'badge-amber',desc:'Match ABG findings to conditions and vital sign terms to definitions',xp:'+60 XP'},
+{id:'labs',name:'Lab Values Room',icon:'🧪',color:'#639922',tag:'CBC & BMP',tagClass:'badge-teal',desc:'CBC, BMP, electrolytes — all normal ranges and clinical significance',xp:'+30 XP'},
+{id:'ref',name:'Reference Library',icon:'📚',color:'#444441',tag:'Quick Look',tagClass:'badge-purple',desc:'Every normal range color-coded in one quick-access reference grid',xp:'+10 XP'},
+{id:'tips',name:'Study Skills Center',icon:'💡',color:'#3B6D11',tag:'Study Science',tagClass:'badge-teal',desc:'10 evidence-based learning techniques — spaced repetition, Feynman, AIDR',xp:'+20 XP'},
+{id:'lessons',name:"Mr. Mendoza's Lessons",icon:'📖',color:'#C026D3',tag:'Structured Lessons',tagClass:'badge-purple',desc:'All 3 lessons in order — read content, answer questions, unlock the next section',xp:'+200 XP'},
+];
+
+/* ── XP & PROGRESS ── */
+const LEVEL_XP=[0,100,250,450,700,1000,1400,1900,2500,3200,4000];
+let prog={xp:0,level:1,badges:0,rp:{}};
+function loadProg(){try{const s=localStorage.getItem('rcare101v2');if(s){const p=JSON.parse(s);if(p&&typeof p.xp==='number')prog=p}}catch(e){}}
+function saveProg(){try{localStorage.setItem('rcare101v2',JSON.stringify(prog))}catch(e){}}
+function addXP(n,msg){
+  prog.xp+=n;
+  const nl=LEVEL_XP.findIndex((v,i)=>prog.xp<v);
+  const newL=nl===-1?LEVEL_XP.length:nl;
+  if(newL>prog.level){prog.level=newL;prog.badges++;saveProg();showNotif('🎉 Level Up!','You reached Level '+prog.level+'!');updateHUD();return;}
+  updateHUD();saveProg();
+  if(msg)showNotif('✅ +'+n+' XP',msg);
+}
+function markRoom(id,c,t){
+  if(!prog.rp[id])prog.rp[id]={s:0,c:0,t:0};
+  prog.rp[id].s++;
+  if(c!==undefined){prog.rp[id].c+=c;prog.rp[id].t+=t;}
+  saveProg();updateRoomGrid();
+}
+function getRoomPct(id){
+  if(id==='lessons'){
+    const total=LESSONS.reduce((a,l)=>a+l.sections.length,0);
+    const done=LESSONS.reduce((a,l,li)=>a+l.sections.filter((_,si)=>isSectionDone(li,si)).length,0);
+    return total===0?0:Math.round(done/total*100);
+  }
+  const r=prog.rp[id];
+  if(!r||r.t===0)return r&&r.s>0?15:0;
+  return Math.min(100,Math.round(r.c/r.t*100));
+}
+function updateHUD(){
+  const lvlMax=LEVEL_XP[Math.min(prog.level,LEVEL_XP.length-1)];
+  const lvlMin=LEVEL_XP[Math.max(prog.level-1,0)];
+  document.getElementById('xp-pill').textContent=prog.xp+' XP';
+  document.getElementById('lvl-pill').textContent='Level '+prog.level;
+  document.getElementById('badge-pill').textContent='⭐ '+prog.badges;
+}
+
+/* ── PARTICLE CANVAS ── */
+const cvs=document.getElementById('particle-canvas');
+const c2=cvs.getContext('2d');
+let particles=[];
+function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
+function initParticles(){
+  particles=[];
+  for(let i=0;i<60;i++)particles.push({
+    x:Math.random()*cvs.width,y:Math.random()*cvs.height,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+.5,
+    color:Math.random()>.5?'rgba(108,99,255,':'rgba(0,212,170,',
+    a:Math.random()*.6+.1,
+  });
+}
+function animParticles(){
+  c2.clearRect(0,0,cvs.width,cvs.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>cvs.width)p.vx*=-1;
+    if(p.y<0||p.y>cvs.height)p.vy*=-1;
+    c2.beginPath();c2.arc(p.x,p.y,p.r,0,Math.PI*2);
+    c2.fillStyle=p.color+p.a+')';c2.fill();
+  });
+  // draw connections
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const d=Math.hypot(particles[i].x-particles[j].x,particles[i].y-particles[j].y);
+      if(d<100){
+        c2.beginPath();c2.moveTo(particles[i].x,particles[i].y);c2.lineTo(particles[j].x,particles[j].y);
+        c2.strokeStyle=`rgba(108,99,255,${(1-d/100)*.08})`;c2.lineWidth=.5;c2.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+}
+resizeCvs();initParticles();animParticles();
+window.addEventListener('resize',()=>{resizeCvs();initParticles();});
+
+/* ── REVEAL OBSERVER ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.1});
+function observeReveal(){document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));}
+
+/* ── ROOM GRID ── */
+function updateRoomGrid(){
+  const grid=document.getElementById('room-grid');
+  if(!grid)return;
+  grid.innerHTML=ROOMS.map((r,i)=>{
+    const pct=getRoomPct(r.id);
+    return`<div class="room-card reveal reveal-delay-${(i%4)+1}" style="--c1:${r.color}20" onclick="openRoom('${r.id}')">
+      <div class="room-card-glow" style="background:${r.color}"></div>
+      <span class="room-card-icon">${r.icon}</span>
+      <div class="a-badge ${r.tagClass}" style="margin-bottom:10px">${r.tag}</div>
+      <div class="room-card-title">${r.name}</div>
+      <div class="room-card-desc">${r.desc}</div>
+      <div class="room-card-footer">
+        <span class="room-card-xp">${r.xp}</span>
+        <div class="room-prog-mini"><div class="room-prog-mini-fill" style="width:${pct}%;background:${r.color}"></div></div>
+        <div class="room-enter-btn">→</div>
+      </div>
+    </div>`;
+  }).join('');
+  observeReveal();
+}
+
+/* ── MODAL ── */
+function openModal(icon,color,title,sub,html){
+  document.getElementById('modal-icon').textContent=icon;
+  document.getElementById('modal-icon-wrap').style.background=color+'22';
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-sub').textContent=sub||'';
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ── ROOM ROUTER ── */
+function openRoom(id){
+  const r=ROOMS.find(x=>x.id===id);
+  switch(id){
+    case 'flashcards':openFlashcards(r,null);break;
+    case 'vitals':openFlashcards(r,'Vital signs');break;
+    case 'labs':openFlashcards(r,'Lab values');break;
+    case 'quiz':openQuiz(r);break;
+    case 'scenarios':openScenarios(r);break;
+    case 'fib':openFIB(r);break;
+    case 'formulas':openFormulas(r);break;
+    case 'abg':openABG(r);break;
+    case 'clinical':openClinical(r);break;
+    case 'match':openMatcher(r);break;
+    case 'ref':openRef(r);break;
+    case 'tips':openTips(r);break;
+    case 'lessons':openRoom_lessons();break;
+  }
+}
+
+/* ── FLASHCARDS ── */
+function openFlashcards(room,tagFilter){
+  const allCards=tagFilter?CARDS.filter(c=>c.tag===tagFilter):shuffle([...CARDS]);
+  let idx=0,got=0,flipped=false;
+  const total=allCards.length;
+  function render(){
+    const card=allCards[idx];
+    const pct=Math.round(idx/total*100);
+    return`<div class="av">
+      <div class="a-prog-bar"><div class="a-prog-fill" style="width:${pct}%;background:${room.color}"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="a-badge badge-purple">${card.tag}</div>
+        <span style="font-size:12px;color:var(--text3);font-weight:600">${idx+1} / ${total}</span>
+      </div>
+      <div class="fc-wrap" onclick="fcFlip()">
+        <div class="fc" id="fc-inner">
+          <div class="fc-face">
+            <div class="fc-tag">${card.tag}</div>
+            <div class="fc-q">${card.q}</div>
+            <div class="fc-hint">tap to reveal</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-tag">Answer</div>
+            <div class="fc-a">${card.a}</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-btns" id="fc-btns" style="display:none">
+        <button class="a-next-btn red" onclick="fcGrade(false)">✕ Again</button>
+        <button class="a-next-btn" style="border-color:rgba(255,255,255,0.12);color:var(--text3)" onclick="fcSkip()">Skip</button>
+        <button class="a-next-btn teal" onclick="fcGrade(true)">✓ Got it</button>
+      </div>
+    </div>`;
+  }
+  window.fcFlip=function(){flipped=!flipped;document.getElementById('fc-inner').classList.toggle('flip',flipped);document.getElementById('fc-btns').style.display=flipped?'flex':'none'};
+  window.fcGrade=function(ok){if(ok)got++;addXP(ok?15:2,'');markRoom(room.id,ok?1:0,1);flipped=false;idx++;if(idx>=total)fcDone();else document.getElementById('modal-body').innerHTML=render();};
+  window.fcSkip=function(){flipped=false;idx++;if(idx>=total)fcDone();else document.getElementById('modal-body').innerHTML=render();};
+  function fcDone(){
+    const pct=Math.round(got/total*100);
+    document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+      <div style="font-size:48px;margin-bottom:16px">🎓</div>
+      <div class="score-title">Deck complete!</div>
+      <div class="score-sub">You knew ${got} of ${total} cards (${pct}%)</div>
+      <div class="score-btns">
+        <button class="a-next-btn" onclick="openFlashcards(window._fcR,'${tagFilter}')">Shuffle again</button>
+        <button class="a-next-btn teal" onclick="closeModal()">Done</button>
+      </div>
+    </div>`;
+    addXP(30,'Deck complete!');markRoom(room.id);
+    if(pct>=75){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!',room.name+' complete: '+pct+'%');}
+  }
+  window._fcR=room;
+  openModal(room.icon,room.color,room.name,'Tap each card to reveal the answer',render());
+}
+
+/* ── QUIZ ── */
+function openQuiz(room){
+  const qs=shuffle([...QUIZ]);
+  let idx=0,score=0,answered=false;
+  function render(){
+    const q=qs[idx];
+    const pct=Math.round(idx/qs.length*100);
+    const opts=q.opts.map((o,i)=>`<button class="a-opt" id="qo${i}" onclick="qAns(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+    const bc=q.cat==='Decide'?'badge-teal':q.cat==='Apply It'?'badge-amber':'badge-purple';
+    return`<div class="av">
+      <div class="a-prog-bar"><div class="a-prog-fill" style="width:${pct}%;background:var(--coral)"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="a-badge ${bc}">${q.cat}</div>
+        <span style="font-size:12px;color:var(--text3);font-weight:600">${idx+1} / ${qs.length}</span>
+      </div>
+      <div class="a-q-box">${q.q}</div>
+      <div class="a-opts">${opts}</div>
+      <div class="a-exp-box" id="qexp" style="display:none"></div>
+      <button class="a-next-btn" id="qnxt" style="display:none" onclick="qNext()">Next →</button>
+    </div>`;
+  }
+  window.qAns=function(i){
+    if(answered)return;answered=true;
+    const q=qs[idx];const ok=i===q.ans;if(ok)score++;
+    q.opts.forEach((_,j)=>{const b=document.getElementById('qo'+j);b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i)b.classList.add('bad');});
+    document.getElementById('qexp').innerHTML=q.exp;document.getElementById('qexp').style.display='block';
+    document.getElementById('qnxt').style.display='inline-flex';
+    addXP(ok?15:2,'');markRoom(room.id,ok?1:0,1);
+  };
+  window.qNext=function(){idx++;answered=false;if(idx>=qs.length)qDone();else document.getElementById('modal-body').innerHTML=render();};
+  function qDone(){
+    const pct=Math.round(score/qs.length*100);
+    const arc=(276.46*(1-pct/100)).toFixed(2);
+    const msgs=[['Keep studying!','Review flashcards and retry.'],['Good effort!','Solid foundation building.'],['Nice work!','Concepts are clicking!'],['Almost there!','Few gaps left.'],['Expert level!','You think like a clinical RT!']];
+    const t=pct<50?0:pct<65?1:pct<80?2:pct<90?3:4;
+    document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+      <div class="score-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="${room.color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${arc}" transform="rotate(-90 50 50)"/></svg><div class="score-num">${pct}%</div></div>
+      <div class="score-title">${msgs[t][0]}</div>
+      <div class="score-sub">${score}/${qs.length} correct — ${msgs[t][1]}</div>
+      <div class="score-btns"><button class="a-next-btn" onclick="openQuiz(window._qR)">Try again</button><button class="a-next-btn teal" onclick="closeModal()">Done</button></div>
+    </div>`;
+    addXP(30,'Quiz complete!');
+    if(pct>=80){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!','Quiz score: '+pct+'%');}
+  }
+  window._qR=room;
+  openModal(room.icon,room.color,room.name,'NBRC-style clinical questions',render());
+}
+
+/* ── SCENARIOS ── */
+function openScenarios(room){
+  let si=0,qi=0,score=0,total=0;
+  function render(){
+    const sc=SCENARIOS[si];const q=sc.questions[qi];
+    const allQ=SCENARIOS.reduce((a,s)=>a+s.questions.length,0);
+    const done=SCENARIOS.slice(0,si).reduce((a,s)=>a+s.questions.length,0)+qi;
+    const pct=Math.round(done/allQ*100);
+    const vits=sc.vitals.map(v=>`<div class="v-chip ${v.a?'abn':''}"><span>${v.v}</span>${v.l}</div>`).join('');
+    const opts=q.opts.map((o,i)=>`<button class="a-opt" id="so${i}" onclick="scAns(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+    const isLast=si===SCENARIOS.length-1&&qi===SCENARIOS[si].questions.length-1;
+    return`<div class="av">
+      <div class="a-prog-bar"><div class="a-prog-fill" style="width:${pct}%;background:var(--teal)"></div></div>
+      <div class="sc-box">
+        <div class="sc-label">Case ${si+1} of ${SCENARIOS.length}: ${sc.title}</div>
+        ${qi===0?`<p class="sc-story">${sc.story}</p>`:''}
+        <div class="v-grid">${vits}</div>
+      </div>
+      <div class="a-badge badge-amber">Step ${qi+1} of ${sc.questions.length}</div>
+      <div class="a-q-box" style="margin-top:8px">${q.q}</div>
+      <div class="a-opts">${opts}</div>
+      <div class="a-exp-box" id="sc-exp" style="display:none"></div>
+      <button class="a-next-btn teal" id="sc-nxt" style="display:none" onclick="scNext()">${isLast?'See results →':'Next →'}</button>
+    </div>`;
+  }
+  window.scAns=function(i){
+    const q=SCENARIOS[si].questions[qi];total++;const ok=i===q.ans;if(ok)score++;
+    q.opts.forEach((_,j)=>{const b=document.getElementById('so'+j);b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i)b.classList.add('bad');});
+    document.getElementById('sc-exp').innerHTML=q.exp;document.getElementById('sc-exp').style.display='block';
+    document.getElementById('sc-nxt').style.display='inline-flex';
+    addXP(ok?15:2,'');markRoom(room.id,ok?1:0,1);
+  };
+  window.scNext=function(){qi++;if(qi>=SCENARIOS[si].questions.length){si++;qi=0;}if(si>=SCENARIOS.length)scDone();else document.getElementById('modal-body').innerHTML=render();};
+  function scDone(){
+    const pct=Math.round(score/total*100);const arc=(276.46*(1-pct/100)).toFixed(2);
+    document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+      <div class="score-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="${room.color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${arc}" transform="rotate(-90 50 50)"/></svg><div class="score-num">${pct}%</div></div>
+      <div class="score-title">Cases complete!</div>
+      <div class="score-sub">${score} of ${total} correct across ${SCENARIOS.length} cases</div>
+      <div class="score-btns"><button class="a-next-btn" onclick="openScenarios(window._scR)">Try again</button><button class="a-next-btn teal" onclick="closeModal()">Done</button></div>
+    </div>`;
+    addXP(30,'Scenarios complete!');
+    if(pct>=70){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!','Scenarios: '+pct+'%');}
+  }
+  window._scR=room;
+  openModal(room.icon,room.color,room.name,'Full clinical patient cases',render());
+}
+
+/* ── FILL IN BLANK ── */
+function openFIB(room){
+  const qs=shuffle([...FIBS]);let idx=0,score=0,answered=false;
+  function render(){
+    const q=qs[idx];const pct=Math.round(idx/qs.length*100);
+    return`<div class="av">
+      <div class="a-prog-bar"><div class="a-prog-fill" style="width:${pct}%;background:#185FA5"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="a-badge badge-purple">${q.cat}</div>
+        <span style="font-size:12px;color:var(--text3);font-weight:600">${idx+1} / ${qs.length}</span>
+      </div>
+      <div class="fib-prompt">${q.prompt}</div>
+      <p class="fib-hint-txt">Hint: ${q.hint}</p>
+      <input class="fib-inp" id="fib-inp" type="text" placeholder="Type your answer…" autocomplete="off" onkeydown="if(event.key==='Enter')fibCheck()">
+      <div class="fib-row">
+        <button class="fib-chk" onclick="fibCheck()">Check answer</button>
+        <button class="fib-show" onclick="fibShow()">Show answer</button>
+      </div>
+      <div class="a-exp-box" id="fib-exp" style="display:none"></div>
+      <button class="a-next-btn" id="fib-nxt" style="display:none" onclick="fibNext()">${idx===qs.length-1?'See results →':'Next →'}</button>
+    </div>`;
+  }
+  window.fibCheck=function(){
+    if(answered)return;answered=true;
+    const q=qs[idx];const inp=document.getElementById('fib-inp');
+    const val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+    const ok=q.ans.some(a=>val===a||val.includes(a));
+    if(ok){score++;inp.classList.add('ok');document.getElementById('fib-exp').innerHTML='<strong>Correct!</strong> Full answer: '+q.display;addXP(15,'Fill-in correct!');}
+    else{inp.classList.add('err');document.getElementById('fib-exp').innerHTML='Not quite. Correct answer: <strong>'+q.display+'</strong>';addXP(2,'');}
+    document.getElementById('fib-exp').style.display='block';
+    document.getElementById('fib-nxt').style.display='inline-flex';
+    markRoom(room.id,ok?1:0,1);
+  };
+  window.fibShow=function(){if(answered)return;answered=true;const q=qs[idx];document.getElementById('fib-inp').classList.add('err');document.getElementById('fib-exp').innerHTML='Answer: <strong>'+q.display+'</strong>';document.getElementById('fib-exp').style.display='block';document.getElementById('fib-nxt').style.display='inline-flex';markRoom(room.id,0,1);};
+  window.fibNext=function(){idx++;answered=false;if(idx>=qs.length)fibDone();else document.getElementById('modal-body').innerHTML=render();setTimeout(()=>document.getElementById('fib-inp')&&document.getElementById('fib-inp').focus(),50);};
+  function fibDone(){
+    const pct=Math.round(score/qs.length*100);const arc=(276.46*(1-pct/100)).toFixed(2);
+    document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+      <div class="score-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="#185FA5" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${arc}" transform="rotate(-90 50 50)"/></svg><div class="score-num">${pct}%</div></div>
+      <div class="score-title">Fill-in complete!</div>
+      <div class="score-sub">${score} of ${qs.length} correct (${pct}%)</div>
+      <div class="score-btns"><button class="a-next-btn" onclick="openFIB(window._fibR)">Try again</button><button class="a-next-btn teal" onclick="closeModal()">Done</button></div>
+    </div>`;
+    addXP(30,'Fill-in-blank complete!');
+    if(pct>=70){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!','Fill-in: '+pct+'%');}
+  }
+  window._fibR=room;
+  openModal(room.icon,room.color,room.name,'Type the value or formula from memory',render());
+  setTimeout(()=>document.getElementById('fib-inp')&&document.getElementById('fib-inp').focus(),300);
+}
+
+/* ── FORMULAS ── */
+function openFormulas(room){
+  const html=`<div class="av">
+  <div class="form-card">
+    <div class="form-name">Minute Ventilation</div><div class="form-eq">VE = RR × VT</div>
+    <div class="form-inputs">
+      <div class="ff"><label>RR (breaths/min)</label><input type="number" id="f1r" placeholder="e.g. 14" oninput="calcVE()"></div>
+      <div class="ff"><label>VT (mL)</label><input type="number" id="f1v" placeholder="e.g. 500" oninput="calcVE()"></div>
+    </div>
+    <div class="form-result" id="f1res">Enter values above</div>
+  </div>
+  <div class="form-card">
+    <div class="form-name">Alveolar Ventilation</div><div class="form-eq">VA = (VT − VD) × RR</div>
+    <div class="form-inputs">
+      <div class="ff"><label>VT (mL)</label><input type="number" id="f2t" placeholder="e.g. 500" oninput="calcVA()"></div>
+      <div class="ff"><label>VD (mL)</label><input type="number" id="f2d" placeholder="e.g. 150" oninput="calcVA()"></div>
+      <div class="ff"><label>RR (breaths/min)</label><input type="number" id="f2r" placeholder="e.g. 12" oninput="calcVA()"></div>
+    </div>
+    <div class="form-result" id="f2res">Enter values above</div>
+  </div>
+  <div class="form-card">
+    <div class="form-name">Arterial Oxygen Content</div><div class="form-eq">CaO₂ = (Hb×1.34×SaO₂)+(PaO₂×0.003)</div>
+    <div class="form-inputs">
+      <div class="ff"><label>Hb (g/dL)</label><input type="number" id="f3h" step="0.1" placeholder="e.g. 14" oninput="calcCaO2()"></div>
+      <div class="ff"><label>SaO₂ (0–1)</label><input type="number" id="f3s" step="0.01" placeholder="e.g. 0.97" oninput="calcCaO2()"></div>
+      <div class="ff"><label>PaO₂ (mmHg)</label><input type="number" id="f3p" placeholder="e.g. 90" oninput="calcCaO2()"></div>
+    </div>
+    <div class="form-result" id="f3res">Enter values above</div>
+  </div>
+  <div class="form-card">
+    <div class="form-name">P/F Ratio</div><div class="form-eq">P/F = PaO₂ ÷ FiO₂</div>
+    <div class="form-inputs">
+      <div class="ff"><label>PaO₂ (mmHg)</label><input type="number" id="f4p" placeholder="e.g. 80" oninput="calcPF()"></div>
+      <div class="ff"><label>FiO₂ (0.21–1.0)</label><input type="number" id="f4f" step="0.01" placeholder="e.g. 0.40" oninput="calcPF()"></div>
+    </div>
+    <div class="form-result" id="f4res">Enter values above</div>
+  </div>
+  <div class="form-card">
+    <div class="form-name">Predicted Body Weight</div><div class="form-eq">PBW = 50/45.5 + 2.3×(ht_in−60)</div>
+    <div class="form-inputs">
+      <div class="ff"><label>Height (inches)</label><input type="number" id="f5h" placeholder="e.g. 65" oninput="calcPBW()"></div>
+      <div class="ff"><label>Sex</label><select id="f5s" onchange="calcPBW()"><option value="m">Male</option><option value="f">Female</option></select></div>
+    </div>
+    <div class="form-result" id="f5res">Enter values above</div>
+  </div>
+  <button class="a-next-btn teal" style="margin-top:8px" onclick="addXP(20,'Formulas practiced!');markRoom('formulas');closeModal()">✓ Done practicing (+20 XP)</button>
+  </div>`;
+  openModal(room.icon,room.color,room.name,'Live formula calculators with instant results',html);
+}
+window.calcVE=()=>{const r=+document.getElementById('f1r').value,v=+document.getElementById('f1v').value;if(!r||!v)return;const ve=(r*v/1000).toFixed(2);document.getElementById('f1res').innerHTML=`VE = ${ve} L/min ${+ve>=5&&+ve<=10?'✓ normal (5–10)':'⚠ outside normal range'}`};
+window.calcVA=()=>{const vt=+document.getElementById('f2t').value,vd=+document.getElementById('f2d').value,rr=+document.getElementById('f2r').value;if(!vt||!rr)return;document.getElementById('f2res').textContent=`VA = ${((vt-vd)*rr/1000).toFixed(2)} L/min (${vt-vd} mL/breath reaches alveoli)`};
+window.calcCaO2=()=>{const h=+document.getElementById('f3h').value,s=+document.getElementById('f3s').value,p=+document.getElementById('f3p').value;if(!h||!s||!p)return;const hb=(h*1.34*s).toFixed(2),dis=(p*.003).toFixed(2);document.getElementById('f3res').innerHTML=`CaO₂ = ${(+hb+ +dis).toFixed(2)} mL/dL (Hb-bound: ${hb} + dissolved: ${dis})`};
+window.calcPF=()=>{const p=+document.getElementById('f4p').value,f=+document.getElementById('f4f').value;if(!p||!f)return;const pf=(p/f).toFixed(0);const i=pf>350?'Normal':pf>=300?'Borderline':pf>=200?'Mild-mod impairment':pf>=100?'Mod-severe ARDS':'Severe ARDS';document.getElementById('f4res').textContent=`P/F = ${pf} — ${i}`};
+window.calcPBW=()=>{const h=+document.getElementById('f5h').value,s=document.getElementById('f5s').value;if(!h)return;const base=s==='m'?50:45.5,pbw=(base+2.3*(h-60)).toFixed(1);document.getElementById('f5res').textContent=`PBW = ${pbw} kg → VT: ${(pbw*6).toFixed(0)}–${(pbw*8).toFixed(0)} mL (6–8 mL/kg)`};
+
+/* ── ABG ── */
+function openABG(room){
+  const html=`<div class="av">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Enter any ABG for a 4-step clinical interpretation.</p>
+    <div class="abg-grid">
+      <div class="abg-f"><label>pH</label><input type="number" id="ap" step="0.01" placeholder="7.35–7.45" oninput="interpABG()"></div>
+      <div class="abg-f"><label>PaCO₂ (mmHg)</label><input type="number" id="ac" step="1" placeholder="35–45" oninput="interpABG()"></div>
+      <div class="abg-f"><label>HCO₃⁻ (mEq/L)</label><input type="number" id="ah" step="1" placeholder="22–26" oninput="interpABG()"></div>
+      <div class="abg-f"><label>PaO₂ (mmHg)</label><input type="number" id="ao" step="1" placeholder="80–100" oninput="interpABG()"></div>
+      <div class="abg-f"><label>FiO₂ (0.21–1.0)</label><input type="number" id="af" step="0.01" placeholder="0.21" oninput="interpABG()"></div>
+      <div class="abg-f"><label>Hb (g/dL)</label><input type="number" id="ahb" step="0.1" placeholder="12–16" oninput="interpABG()"></div>
+    </div>
+    <div id="abg-out"></div>
+    <button class="a-next-btn" style="margin-top:12px;border-color:rgba(153,60,29,0.5);color:#F0997B" onclick="addXP(10,'ABG practiced!');markRoom('abg');closeModal()">✓ Done (+10 XP)</button>
+  </div>`;
+  openModal(room.icon,room.color,room.name,'4-step clinical interpretation tool',html);
+}
+window.interpABG=function(){
+  const ph=+document.getElementById('ap').value,co2=+document.getElementById('ac').value,hco3=+document.getElementById('ah').value;
+  if(!ph||!co2||!hco3){document.getElementById('abg-out').innerHTML='';return;}
+  const pao2=+document.getElementById('ao').value||NaN,fio2=+document.getElementById('af').value||0.21,hb=+document.getElementById('ahb').value||NaN;
+  const phS=ph<7.35?'Acidemia':ph>7.45?'Alkalemia':'Normal pH';
+  const vc=ph<7.35?'c-acid':ph>7.45?'c-alk':'c-norm';
+  const co2N=co2>45&&ph<7.35?'→ Respiratory acidosis (hypoventilation)':co2<35&&ph>7.45?'→ Respiratory alkalosis (hyperventilation)':co2>45?'→ High CO₂ (compensation or mixed)':co2<35?'→ Low CO₂ (compensation or mixed)':'→ Normal range';
+  const hN=hco3<22&&ph<7.35?'→ Metabolic acidosis':hco3>26&&ph>7.45?'→ Metabolic alkalosis':hco3>26&&ph<7.35?'→ Elevated HCO₃ compensating for respiratory acidosis':hco3<22&&ph>7.45?'→ Low HCO₃ compensating for respiratory alkalosis':'→ Normal range';
+  let primary='Normal',hypox='';
+  if(ph<7.35){if(co2>45&&hco3>=22&&hco3<=26)primary='Acute respiratory acidosis';else if(co2>45&&hco3>26)primary='Chronic compensated respiratory acidosis';else if(hco3<22)primary='Metabolic acidosis'+(co2<35?' + respiratory compensation':'');}
+  else if(ph>7.45){if(co2<35&&hco3>=22&&hco3<=26)primary='Acute respiratory alkalosis';else if(co2<35&&hco3<22)primary='Chronic compensated respiratory alkalosis';else if(hco3>26)primary='Metabolic alkalosis'+(co2>45?' + respiratory compensation':'');}
+  else primary='Compensated or normal';
+  let o2='',pf='',cao='';
+  if(!isNaN(pao2)){if(pao2<80){hypox=' with hypoxemia';o2=`PaO₂ ${pao2} < 80 — hypoxemia.`;}else o2=`PaO₂ ${pao2} — oxygenation adequate.`}
+  if(!isNaN(pao2)){const r=(pao2/fio2).toFixed(0);const i=r>350?'Normal':r>=300?'Borderline':r>=200?'Mild-mod impairment':r>=100?'Mod-severe ARDS':'Severe ARDS';pf=` P/F = ${r} (${i}).`}
+  if(!isNaN(hb)&&!isNaN(pao2)){const s2=pao2>=60?0.96:0.88;cao=` Est CaO₂ ≈ ${(hb*1.34*s2+pao2*0.003).toFixed(1)} mL/dL.`}
+  document.getElementById('abg-out').innerHTML=`<div class="abg-result"><div class="abg-v-lbl">Interpretation</div><div class="abg-verdict ${vc}">${primary}${hypox}</div><div class="abg-steps"><strong>Step 1 — pH ${ph}:</strong> ${phS}<br><strong>Step 2 — PaCO₂ ${co2}:</strong> ${co2N}<br><strong>Step 3 — HCO₃ ${hco3}:</strong> ${hN}<br><strong>Step 4 — Oxygenation:</strong> ${o2||'(PaO₂ not entered)'}${pf}${cao}</div></div>`;
+};
+
+/* ── CLINICAL ── */
+function openClinical(room){
+  const items=[
+    {t:'Oxygenation Failure — markers',b:'Low PaO₂ (< 80 mmHg)\nLow SpO₂ (< 95%)\nLow P/F ratio (< 300)\nHigh A–a gradient\nClinical: crackles, cyanosis, increased O₂ need',cls:'purple'},
+    {t:'Ventilation Failure — markers',b:'High PaCO₂ (> 45 mmHg)\nLow pH if acute (< 7.35)\nLow alveolar ventilation\nHigh work of breathing\nClinical: lethargy, fatigue, decreased mental status',cls:'teal'},
+    {t:'RT Response: Oxygenation failure',b:'1. Increase FiO₂\n2. Apply PEEP or CPAP\n3. Reposition patient (prone if severe ARDS)\n4. Investigate: shunt? V/Q mismatch?',cls:'coral'},
+    {t:'RT Response: Ventilation failure',b:'1. Increase ventilation (VT or RR)\n2. Consider NIV (BiPAP/CPAP)\n3. Intubate if severe or deteriorating\n4. In COPD: careful with FiO₂ — hypoxic drive risk',cls:'amber'},
+    {t:'AIDR: The RT Clinical Framework',b:'Assess → collect data (vitals, breath sounds, math)\nInterpret → what do the numbers mean?\nDecide → most dangerous problem + recommendation\nReassess → confirm the intervention worked',cls:'purple'},
+    {t:'3 Layers of NBRC Thinking',b:'Layer 1 — Know It: Normal values, formulas, definitions\nLayer 2 — Apply It: Calculate for this specific patient\nLayer 3 — Decide With It: Recommend, escalate, or change care',cls:'teal'},
+  ];
+  const html=`<div class="av">
+    ${items.map(it=>`<div class="dec-card ${it.cls}"><div class="dec-title">${it.t}</div><div class="dec-body">${it.b}</div></div>`).join('')}
+    <button class="a-next-btn teal" style="margin-top:8px" onclick="addXP(20,'Clinical decision suite studied!');markRoom('clinical');closeModal()">✓ Mark as studied (+20 XP)</button>
+  </div>`;
+  openModal(room.icon,room.color,room.name,'Clinical decision frameworks',html);
+}
+
+/* ── MATCHER ── */
+function openMatcher(room){
+  let si=0,sel={side:null,idx:null},matched={l:[],r:[]};
+  function render(){
+    const set=MATCH_SETS[si];
+    const ls=shuffle(set.pairs.map(p=>p.l));
+    const rs=shuffle(set.pairs.map(p=>p.r));
+    window._mp=set.pairs;window._ml=ls;window._mr=rs;
+    sel={side:null,idx:null};matched={l:[],r:[]};
+    const lH=ls.map((t,i)=>`<div class="match-item" id="ml${i}" onclick="mPick('l',${i})">${t}</div>`).join('');
+    const rH=rs.map((t,i)=>`<div class="match-item" id="mr${i}" onclick="mPick('r',${i})">${t}</div>`).join('');
+    return`<div class="av">
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;font-family:'Space Grotesk',sans-serif">${set.title}</div>
+      <div class="match-wrap"><div class="match-col">${lH}</div><div class="match-col">${rH}</div></div>
+      <div id="mfb" style="font-size:13px;color:var(--text2);min-height:20px;margin-bottom:10px"></div>
+      <div id="mdone" style="display:none;text-align:center;padding:16px 0">
+        <div style="font-size:16px;font-weight:700;color:var(--teal);margin-bottom:14px">All matched! ✓</div>
+        ${si<MATCH_SETS.length-1?'<button class="a-next-btn teal" onclick="mNext()">Next set →</button>':'<button class="a-next-btn" onclick="openMatcher(window._mR)">Try again</button>'}
+        <button class="a-next-btn" style="margin-left:8px" onclick="closeModal()">Done</button>
+      </div>
+    </div>`;
+  }
+  window.mPick=function(side,idx){
+    if(matched[side].includes(idx))return;
+    if(sel.side===null){sel={side,idx};document.getElementById((side==='l'?'ml':'mr')+idx).classList.add('sel');return;}
+    if(sel.side===side){document.getElementById((sel.side==='l'?'ml':'mr')+sel.idx).classList.remove('sel');sel={side,idx};document.getElementById((side==='l'?'ml':'mr')+idx).classList.add('sel');return;}
+    const li=side==='r'?sel.idx:idx,ri=side==='r'?idx:sel.idx;
+    const ok=window._mp.some(p=>p.l===window._ml[li]&&p.r===window._mr[ri]);
+    const le=document.getElementById('ml'+li),re=document.getElementById('mr'+ri);
+    le.classList.remove('sel');re.classList.remove('sel');
+    if(ok){le.classList.add('mok');re.classList.add('mok');matched.l.push(li);matched.r.push(ri);document.getElementById('mfb').textContent='✓ Correct!';addXP(15,'Match!');markRoom(room.id,1,1);if(matched.l.length===window._mp.length)document.getElementById('mdone').style.display='block';}
+    else{le.classList.add('merr');re.classList.add('merr');document.getElementById('mfb').textContent='✗ Not a match — try again.';markRoom(room.id,0,1);setTimeout(()=>{le.classList.remove('merr');re.classList.remove('merr');document.getElementById('mfb').textContent=''},900);}
+    sel={side:null,idx:null};
+  };
+  window.mNext=function(){si++;document.getElementById('modal-body').innerHTML=render();};
+  window._mR=room;
+  openModal(room.icon,room.color,room.name,'Match terms to their definitions',render());
+}
+
+/* ── REFERENCE ── */
+function openRef(room){
+  const html=`<div class="av">
+    <div class="ref-grid">${REF.map(r=>`<div class="ref-c"><div class="ref-n">${r.n}</div><div class="ref-v ${r.c}">${r.v}</div></div>`).join('')}</div>
+    <button class="a-next-btn" style="margin-top:14px" onclick="addXP(5,'Reference reviewed!');markRoom('ref');closeModal()">✓ Done (+5 XP)</button>
+  </div>`;
+  openModal(room.icon,room.color,room.name,'All normal values color-coded',html);
+}
+
+/* ── TIPS ── */
+function openTips(room){
+  const html=`<div class="av">
+    ${TIPS.map(t=>`<div class="tip-c"><div class="tip-t">${t.t}</div><div class="tip-b">${t.b}</div></div>`).join('')}
+    <button class="a-next-btn teal" style="margin-top:8px" onclick="addXP(15,'Study skills reviewed!');markRoom('tips');closeModal()">✓ Done (+15 XP)</button>
+  </div>`;
+  openModal(room.icon,room.color,room.name,'Evidence-based learning techniques',html);
+}
+
+/* ── PROGRESS ── */
+function openProgress(){
+  const rows=ROOMS.map(r=>{
+    const pct=getRoomPct(r.id);
+    const sess=(prog.rp[r.id]||{s:0}).s;
+    return`<div class="room-row">
+      <div class="room-dot" style="background:${r.color}"></div>
+      <span class="room-name">${r.icon} ${r.name}</span>
+      <div class="room-bar"><div class="room-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>
+      <span class="room-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+  const html=`<div class="av">
+    <div class="prog-grid">
+      <div class="prog-card"><div class="prog-card-label">Total XP</div><div class="prog-card-val c-purple">${prog.xp}</div></div>
+      <div class="prog-card"><div class="prog-card-label">Level</div><div class="prog-card-val c-amber">${prog.level}</div></div>
+      <div class="prog-card"><div class="prog-card-label">Badges</div><div class="prog-card-val c-amber">⭐ ${prog.badges}</div></div>
+      <div class="prog-card"><div class="prog-card-label">Rooms visited</div><div class="prog-card-val c-teal">${Object.keys(prog.rp).filter(k=>!k.startsWith('ls_')).length}/${ROOMS.length}</div></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">Room mastery</div>
+    ${rows}
+    <button class="a-next-btn" style="margin-top:20px;border-color:rgba(255,107,107,0.35);color:var(--coral)" onclick="if(confirm('Reset all progress?')){localStorage.removeItem('rcare101v2');location.reload()}">Reset progress</button>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(123,111,255,0.1)">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">📖 Mr. Mendoza's Lessons</div>
+      ${LESSONS.map((l,li)=>{
+        const secsDone=l.sections.filter((_,si)=>isSectionDone(li,si)).length;
+        const pct=Math.round(secsDone/l.sections.length*100);
+        return`<div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:600;color:var(--text)">${l.icon} Lesson ${l.num}: ${l.title}</span>
+            <span style="font-size:11px;color:var(--text3)">${secsDone}/${l.sections.length} sections</span>
+          </div>
+          ${l.sections.map((s,si)=>{
+            const done=isSectionDone(li,si);
+            const locked=!isSectionUnlocked(li,si);
+            return`<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 12px">
+              <span style="font-size:12px">${locked?'🔒':done?'✅':'○'}</span>
+              <span style="font-size:12px;color:${done?'var(--teal)':locked?'var(--text3)':'var(--text2)'}">${s.title}</span>
+              ${done?`<span style="font-size:10px;color:var(--teal);text-shadow:0 0 8px rgba(0,255,209,0.5)">DONE</span>`:''}
+            </div>`;
+          }).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+  openModal('📊','#534AB7','Your Progress','XP, levels, and room mastery',html);
+}
+
+/* ── NOTIFICATION ── */
+let notifT=null;
+function showNotif(title,msg){
+  const el=document.getElementById('notif');
+  document.getElementById('notif-t').textContent=title;
+  document.getElementById('notif-m').textContent=msg;
+  el.classList.add('show');
+  if(notifT)clearTimeout(notifT);
+  notifT=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+/* ── UTILS ── */
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+
+/* ══════════════════════════════════════
+   MR. MENDOZA'S LESSONS ENGINE
+══════════════════════════════════════ */
+const LESSONS=[
+{
+  id:'L1',num:1,title:'Vital Signs & Predicted Body Weight',color:'#C026D3',icon:'💓',
+  sections:[
+    {
+      id:'L1S1',title:'Body Temperature',
+      content:`<h3>🌡️ Body Temperature</h3>
+<p>Vital signs include body temperature, pulse rate, respiratory rate, blood pressure, and pulse oximetry. They are essential for patient monitoring and provide valuable information about the patient's condition.</p>
+<div class="ls-fact"><strong>Normal Adult Temperature:</strong> 37°C (98.6°F) — fluctuates ~0.5°C daily (lowest early morning, highest late afternoon). Controlled by the <em>hypothalamus</em>.</div>
+<h4>Hyperthermia (Fever)</h4>
+<div class="ls-table"><table><tr><th>Term</th><th>Value/Definition</th></tr>
+<tr><td>Fever</td><td>> 38.3°C (101°F)</td></tr>
+<tr><td>Pneumonia suspicion</td><td>≥ 38.9°C (102°F) for 2+ days with chills</td></tr>
+<tr><td>FUO</td><td>Fever > 3 weeks, unexplained (common in HIV)</td></tr>
+</table></div>
+<p><strong>Effects of fever:</strong> ↑ metabolism, ↑ O₂ consumption and CO₂ production, ↑ HR and RR. Complicates COPD management.</p>
+<p><strong>Causes of fever:</strong> Infections (bacterial/viral/fungal), drug reactions (sulfa drugs), malignancies, head trauma, burns, pulmonary embolism, rheumatoid arthritis.</p>
+<h4>Hypothermia</h4>
+<p>Body temperature below normal. Common source: prolonged cold exposure. Hypothalamus responds with shivering and vasoconstriction. Effects: ↓ O₂ consumption and CO₂ production, slow shallow breathing, reduced HR.</p>
+<h4>Measurement Sites</h4>
+<div class="ls-table"><table><tr><th>Site</th><th>Note</th></tr>
+<tr><td>Oral</td><td>Alert adults; wait 10–15 min after hot/cold liquids</td></tr>
+<tr><td>Axilla</td><td>Underestimates core by 1–2°C</td></tr>
+<tr><td>Tympanic</td><td>Accurate and convenient</td></tr>
+<tr><td>Rectal</td><td>Most accurate — closest to core temperature</td></tr>
+</table></div>`,
+      questions:[
+        {q:'What is the normal adult body temperature and who controls it?',opts:['36°C; controlled by the medulla','37°C (98.6°F); controlled by the hypothalamus','38°C; controlled by the cerebral cortex','36.5°C; controlled by the pituitary gland'],ans:1,exp:'Normal adult temperature is 37°C (98.6°F). The hypothalamus regulates heat through vasodilation/sweating (dissipation) and vasoconstriction (conservation).'},
+        {q:'Fever is defined as body temperature greater than:',opts:['37.5°C (99.5°F)','38.0°C (100.4°F)','38.3°C (101°F)','39.0°C (102.2°F)'],ans:2,exp:'Fever = body temperature > 38.3°C (101°F). Pneumonia is suspected at ≥ 38.9°C (102°F) lasting 2+ days with chills.'},
+        {q:'Which temperature measurement site is closest to actual core body temperature?',opts:['Oral (mouth)','Axilla (armpit)','Tympanic (ear)','Rectal'],ans:3,exp:'The rectal site is closest to core body temperature. The tympanic membrane is also accurate and convenient. The axilla may underestimate core temperature by 1–2°C.'},
+      ]
+    },
+    {
+      id:'L1S2',title:'Pulse Rate',
+      content:`<h3>❤️ Pulse Rate</h3>
+<div class="ls-fact"><strong>Normal Adult Rate:</strong> 60–100 beats/min with regular rhythm. Assessed at radial artery (second and third fingertip pads — NOT the thumb).</div>
+<div class="ls-table"><table><tr><th>Condition</th><th>Rate</th><th>Common Causes</th></tr>
+<tr><td>Tachycardia</td><td>> 100/min</td><td>Exercise, fear, anxiety, low BP, anemia, fever, hypoxemia, hypercapnia, medications</td></tr>
+<tr><td>Bradycardia</td><td>< 60/min</td><td>Hypothermia, brain/spinal cord injury, cardiac arrhythmias, medications</td></tr>
+</table></div>
+<h4>Special Pulse Conditions</h4>
+<div class="ls-table"><table><tr><th>Condition</th><th>Definition</th><th>Clinical Meaning</th></tr>
+<tr><td>Pulsus Paradoxus</td><td>BP drops > 10 mmHg during inspiration</td><td>COPD exacerbation, asthma attacks — large negative intrathoracic pressure swings</td></tr>
+<tr><td>Pulsus Alternans</td><td>Alternating strong and weak pulses</td><td>Left-sided heart failure (NOT pulmonary disease)</td></tr>
+</table></div>
+<p><strong>Mechanism of Pulsus Paradoxus:</strong> Negative intrathoracic pressure during inspiration → blood pools in pulmonary circulation → ↓ left ventricular filling → ↓ stroke volume → ↓ systolic BP.</p>
+<p><strong>Central Pulse Palpation</strong> (carotid/femoral): Use when BP is abnormally low. Avoid pressing on the carotid sinus — can trigger bradycardia via parasympathetic stimulation.</p>`,
+      questions:[
+        {q:'A patient has a pulse of 115 beats/min. This is called:',opts:['Bradycardia','Normal sinus rhythm','Tachycardia','Pulsus alternans'],ans:2,exp:'Tachycardia = pulse > 100/min. This patient at 115/min has tachycardia. Causes include hypoxemia, fever, anxiety, anemia, and hypercapnia — all relevant to respiratory therapy.'},
+        {q:'Pulsus Paradoxus is defined as systolic BP dropping > 10 mmHg during inspiration. It is most commonly seen in:',opts:['Left heart failure','COPD exacerbations and severe asthma','Hypertension','Metabolic acidosis'],ans:1,exp:'Pulsus Paradoxus is caused by exaggerated negative intrathoracic pressure during inspiration, common in COPD exacerbations and severe asthma. This reduces left ventricular filling and stroke volume.'},
+        {q:'Pulsus Alternans (alternating strong/weak pulses) indicates:',opts:['COPD exacerbation','Pulmonary embolism','Left-sided heart failure','Respiratory alkalosis'],ans:2,exp:'Pulsus Alternans indicates left-sided heart failure — it is NOT related to the breathing cycle or pulmonary disease. This distinguishes it from Pulsus Paradoxus.'},
+      ]
+    },
+    {
+      id:'L1S3',title:'Respiratory Rate',
+      content:`<h3>🌬️ Respiratory Rate</h3>
+<div class="ls-fact"><strong>Normal Resting Adult RR:</strong> 12–18 breaths/min</div>
+<div class="ls-table"><table><tr><th>Condition</th><th>Rate</th><th>Common Causes</th></tr>
+<tr><td>Tachypnea</td><td>> 20/min</td><td>Exertion, fever, hypoxemia, hypercapnia, metabolic acidosis, pulmonary edema, lung fibrosis, anxiety, pain</td></tr>
+<tr><td>Bradypnea</td><td>< 10/min</td><td>Brain injury, severe MI, hypothermia, anesthetics, opiate narcotics, recreational drug overdoses</td></tr>
+</table></div>
+<h4>How to Count Respiratory Rate (Technique)</h4>
+<ol class="ls-list">
+  <li>Visual observation — watch abdomen or chest wall move in and out</li>
+  <li>Place hand on upper abdomen to detect diaphragmatic contraction if needed</li>
+  <li><strong>Critical:</strong> Ensure the patient is UNAWARE you are counting their RR — awareness causes patients to artificially change their rate</li>
+  <li>Count immediately after evaluating the pulse, keeping fingers on the wrist to give the impression you are still counting the pulse</li>
+</ol>`,
+      questions:[
+        {q:'A patient breathing at 24/min is classified as:',opts:['Bradypnea','Normal','Tachypnea','Apnea'],ans:2,exp:'Tachypnea = RR > 20/min. At 24/min this patient has tachypnea. Causes relevant to RT include hypoxemia, hypercapnia, metabolic acidosis, pulmonary edema, and fever.'},
+        {q:'Why must patients be unaware that their respiratory rate is being counted?',opts:['To save time','Awareness causes patients to artificially alter their breathing rate','Hospital protocol','It does not matter — count at any time'],ans:1,exp:'Patients who know their RR is being counted will consciously or unconsciously alter their breathing. The technique is to count RR immediately after the pulse, keeping fingers on the wrist to disguise what you are doing.'},
+        {q:'Bradypnea (RR < 10/min) is most commonly caused by:',opts:['Fever and hypoxemia','Metabolic acidosis and anxiety','Opiate narcotics, brain injury, anesthetics','Pulmonary edema and fibrosis'],ans:2,exp:'Bradypnea is caused by CNS depression — opiate narcotics, anesthetics, traumatic brain injury, hypothermia, severe myocardial infarction, and recreational drug overdoses. These reduce the respiratory drive.'},
+      ]
+    },
+    {
+      id:'L1S4',title:'Blood Pressure',
+      content:`<h3>🩺 Arterial Blood Pressure</h3>
+<p>The force exerted by the heart against systemic arteries as blood moves through them.</p>
+<div class="ls-fact"><strong>Components:</strong> Systolic (peak contraction) / Diastolic (relaxation). Pulse Pressure = Systolic − Diastolic (normal: 30–40 mmHg).</div>
+<div class="ls-table"><table><tr><th>Category</th><th>Systolic</th><th>Diastolic</th></tr>
+<tr><td>Normal</td><td>< 120 mmHg</td><td>< 80 mmHg</td></tr>
+<tr><td>Elevated</td><td>120–129</td><td>< 80</td></tr>
+<tr><td>Stage 1 HTN</td><td>130–139</td><td>80–89</td></tr>
+<tr><td>Stage 2 HTN</td><td>> 139</td><td>> 89</td></tr>
+<tr><td>Hypotension</td><td>< 90 or MAP < 65</td><td>—</td></tr>
+</table></div>
+<h4>Technique for Measuring BP</h4>
+<ol class="ls-list">
+  <li>Wrap sphygmomanometer cuff around upper arm, 1 inch above antecubital fossa</li>
+  <li>Inflate 30 mmHg above where brachial pulse disappears</li>
+  <li>Deflate slowly at 2–3 mmHg/sec with stethoscope over brachial artery</li>
+  <li>Systolic = first Korotkoff sound; Diastolic = sounds disappear</li>
+</ol>
+<h4>Hypotension Types</h4>
+<ul class="ls-list"><li><strong>Hypodynamic:</strong> Left ventricular failure, hypovolemia</li><li><strong>Hyperdynamic:</strong> Systemic vasodilation — septic shock, anaphylaxis, liver failure</li><li><strong>Postural:</strong> BP drops on standing — treat with fluids</li></ul>`,
+      questions:[
+        {q:'Normal blood pressure is defined as:',opts:['Systolic < 130, Diastolic < 90','Systolic < 120, Diastolic < 80','Systolic < 140, Diastolic < 90','Systolic < 110, Diastolic < 70'],ans:1,exp:'Normal BP = Systolic < 120 mmHg and Diastolic < 80 mmHg. Stage 1 HTN begins at 130/80; Stage 2 HTN at > 140/90. Hypertension affects ~90% of cases with unknown cause (essential hypertension).'},
+        {q:'When measuring BP, systolic pressure is recorded when you hear:',opts:['Korotkoff sounds disappear','The first Korotkoff sound','The pulse is no longer palpable','A brachial thrill'],ans:1,exp:'Systolic pressure = first Korotkoff sound heard as you deflate the cuff. Diastolic pressure = when Korotkoff sounds disappear. Inflate 30 mmHg above where the brachial pulse disappears.'},
+        {q:'Hypotension is defined as systolic BP less than:',opts:['100 mmHg','90 mmHg or MAP < 65 mmHg','80 mmHg','110 mmHg'],ans:1,exp:'Hypotension = systolic < 90 mmHg OR MAP < 65 mmHg OR drop > 40 mmHg from baseline. Types: Hypodynamic (heart failure, hypovolemia) and Hyperdynamic (septic shock, anaphylaxis).'},
+      ]
+    },
+    {
+      id:'L1S5',title:'PBW & Tidal Volume',
+      content:`<h3>⚖️ Predicted Body Weight (PBW) & Tidal Volume</h3>
+<p>PBW is used instead of actual body weight for ventilator settings because <strong>lungs grow based on height and sex — not weight</strong>. Using actual weight in obese patients would overdistend alveoli (volutrauma).</p>
+<div class="ls-fact"><strong>PBW Formulas:</strong><br>
+Males: 50 + 2.3 × (height in inches − 60) kg<br>
+Females: 45.5 + 2.3 × (height in inches − 60) kg</div>
+<div class="ls-table"><table><tr><th>Setting</th><th>Normal / Initial</th><th>ARDS</th></tr>
+<tr><td>VT (Spontaneous)</td><td>6 mL/kg PBW (5–7 range)</td><td>4–8 mL/kg PBW</td></tr>
+<tr><td>RR (Initial)</td><td>12–16 breaths/min</td><td>25–35 breaths/min</td></tr>
+<tr><td>Minute Ventilation</td><td>~100 mL/kg PBW/min</td><td>Higher rate as needed</td></tr>
+<tr><td>Plateau Pressure (Pplat)</td><td>< 30 cm H₂O</td><td>< 30 cm H₂O</td></tr>
+<tr><td>Driving Pressure</td><td>≤ 15 cm H₂O</td><td>≤ 15 cm H₂O</td></tr>
+</table></div>
+<h4>Rule of Thumb — Standard Initial Settings</h4>
+<ul class="ls-list"><li>VT 6 mL/kg PBW + RR 16/min, OR</li><li>VT 8 mL/kg PBW + RR 12/min</li><li>If Pplat > 30 cm H₂O → decrease VT by 1 mL/kg steps (minimum 4 mL/kg)</li></ul>
+<h4>Ventilation Modes</h4>
+<p><strong>SIMV:</strong> VE_TOT = (VTsp × fsp) + (VTmach × fmach)</p>
+<p><strong>PC-CMV:</strong> VT depends on pressure change, inspiratory time, and lung mechanics. Start pressure at 10 cm H₂O above PEEP.</p>`,
+      questions:[
+        {q:'Why is Predicted Body Weight (PBW) used instead of actual weight for tidal volume settings?',opts:['Actual weight is harder to measure','Lung size correlates with height and sex, not body weight — actual weight causes volutrauma','PBW includes a correction for BMI','PBW is required by hospital protocol only'],ans:1,exp:'Lungs do not grow with body fat. If we used actual weight in an obese patient, we would set a dangerously high VT that overdistends alveoli (volutrauma). PBW is based on height and sex — the true determinants of lung size.'},
+        {q:'The target plateau pressure (Pplat) on mechanical ventilation should be:',opts:['< 20 cm H₂O','< 25 cm H₂O','< 30 cm H₂O','< 40 cm H₂O'],ans:2,exp:'Pplat should be maintained < 30 cm H₂O to prevent barotrauma/volutrauma. Driving pressure (Pplat − PEEP) should be ≤ 15 cm H₂O. If Pplat > 30, decrease VT by 1 mL/kg steps.'},
+        {q:'A 70-kg patient (by PBW) on a ventilator. Initial VT at 6 mL/kg would be set to:',opts:['420 mL','600 mL','700 mL','500 mL'],ans:0,exp:'VT = 6 mL/kg × 70 kg = 420 mL. The range would be 4–8 mL/kg = 280–560 mL. Remember: this is PBW, not actual weight.'},
+      ]
+    },
+  ]
+},
+{
+  id:'L2',num:2,title:'Minute Ventilation & Alveolar Air Equation',color:'#0284C7',icon:'💨',
+  sections:[
+    {
+      id:'L2S1',title:'Minute Ventilation',
+      content:`<h3>💨 Minute Ventilation (VE)</h3>
+<p>The <strong>total volume of fresh gas entering or leaving the lungs per minute</strong>.</p>
+<div class="ls-fact"><strong>Formula: VE = fB × VT</strong><br>
+Example: fB = 12 breaths/min, VT = 500 mL → VE = 12 × 500 = 6,000 mL/min = <strong>6 L/min</strong><br>
+Normal range: <strong>5–10 L/min</strong> at rest</div>
+<h4>Effectiveness vs. Efficiency</h4>
+<ul class="ls-list">
+  <li><strong>Effective ventilation:</strong> Removes CO₂ at a rate that maintains normal pH (~200 mL CO₂/min produced at rest)</li>
+  <li><strong>Efficient ventilation:</strong> Consumes minimal O₂ and produces minimal CO₂</li>
+</ul>
+<h4>Types of Ventilation</h4>
+<div class="ls-table"><table><tr><th>Type</th><th>Definition</th><th>PaCO₂</th><th>pH</th></tr>
+<tr><td>Hypoventilation</td><td>Ventilation < metabolic needs</td><td>Elevated</td><td>< 7.35 (resp. acidosis)</td></tr>
+<tr><td>Hyperventilation</td><td>Ventilation > metabolic needs</td><td>Below normal</td><td>> 7.45 (resp. alkalosis)</td></tr>
+<tr><td>Hyperpnea</td><td>↑ ventilation matching ↑ metabolism (exercise)</td><td>Normal 35–45</td><td>~7.4 (no change)</td></tr>
+</table></div>`,
+      questions:[
+        {q:'A patient breathes at RR 14/min with VT 450 mL. What is the Minute Ventilation?',opts:['4.5 L/min','6.3 L/min','5.6 L/min','7.0 L/min'],ans:1,exp:'VE = RR × VT = 14 × 0.450 = 6.3 L/min. This is within the normal range of 5–10 L/min.'},
+        {q:'A patient has elevated PaCO₂ and low pH. Their ventilation is:',opts:['Effective hyperventilation','Hypoventilation causing respiratory acidosis','Hyperpnea during exercise','Normal ventilation'],ans:1,exp:'Elevated PaCO₂ + low pH = hypoventilation causing respiratory acidosis. The lungs are not removing CO₂ fast enough to meet metabolic needs. The RT must increase ventilation.'},
+        {q:'During strenuous exercise, a patient has normal PaCO₂ and pH despite breathing faster. This is:',opts:['Pathological hyperventilation','Hypoventilation compensation','Hyperpnea — normal response to increased metabolism','Respiratory alkalosis'],ans:2,exp:'Hyperpnea is a normal physiologic response where ventilation increases proportionally to ↑ CO₂ production during exercise. PaCO₂ and pH remain normal because ventilation matches metabolism.'},
+      ]
+    },
+    {
+      id:'L2S2',title:'Dead Space',
+      content:`<h3>🫧 Dead Space & Alveolar Ventilation</h3>
+<p>Dead space is the portion of VT that does <strong>NOT</strong> participate in gas exchange.</p>
+<div class="ls-fact"><strong>Relationship:</strong> VT = VD + VA<br>
+Where VD = dead space, VA = alveolar volume per breath</div>
+<h4>3 Types of Dead Space</h4>
+<div class="ls-table"><table><tr><th>Type</th><th>Definition</th><th>Cause/Note</th></tr>
+<tr><td>Anatomic VD</td><td>Gas in conducting airways (trachea, bronchi)</td><td>~1 mL/lb IBW (2.2 mL/kg); ~150 mL in 150-lb adult</td></tr>
+<tr><td>Alveolar VD</td><td>Gas in alveoli that are ventilated but NOT perfused</td><td>Common cause: pulmonary embolism</td></tr>
+<tr><td>Physiologic VD</td><td>Anatomic + Alveolar dead space</td><td>Preferred clinical measure of efficiency; VD/VT = (PaCO₂ − PeCO₂) / PaCO₂; Normal: 0.2–0.4</td></tr>
+</table></div>
+<h4>Alveolar Ventilation (VA)</h4>
+<div class="ls-fact"><strong>VA = (VT − VD) × RR</strong><br>
+Example: VT 500 mL, VD 150 mL, RR 12/min → VA = (500−150) × 12 = 350 × 12 = <strong>4,200 mL/min = 4.2 L/min</strong></div>
+<h4>The Breathing Pattern Trap ⚠️</h4>
+<p>Fast, shallow breathing does NOT equal effective ventilation. If VT is too small relative to VD, almost no air reaches the alveoli.</p>
+<div class="ls-table"><table><tr><th>Pattern</th><th>RR</th><th>VT</th><th>VE</th><th>VD</th><th>VA</th></tr>
+<tr><td>Normal</td><td>12</td><td>500</td><td>6,000</td><td>150</td><td>4,200</td></tr>
+<tr><td>Fast shallow</td><td>24</td><td>250</td><td>6,000</td><td>150</td><td>2,400</td></tr>
+<tr><td>Slow deep</td><td>6</td><td>1,000</td><td>6,000</td><td>150</td><td>5,100</td></tr>
+</table></div>`,
+      questions:[
+        {q:'A patient has VT 300 mL, VD 200 mL, RR 24/min. Alveolar ventilation is:',opts:['7.2 L/min','2.4 L/min','4.8 L/min','1.2 L/min'],ans:1,exp:'VA = (VT − VD) × RR = (300 − 200) × 24 = 100 × 24 = 2,400 mL/min = 2.4 L/min. Despite a normal VE of 7.2 L/min, the patient barely has adequate alveolar ventilation. This is the Breathing Pattern Trap.'},
+        {q:'Which type of dead space is caused by alveoli that are ventilated but not perfused (e.g., pulmonary embolism)?',opts:['Anatomic dead space','Alveolar dead space','Physiologic dead space','Mechanical dead space'],ans:1,exp:'Alveolar dead space = gas in alveoli that are ventilated but lack blood flow (perfusion). Common cause: pulmonary embolism blocking blood flow to ventilated alveoli. Physiologic VD = anatomic + alveolar VD.'},
+        {q:'The normal VD/VT ratio is:',opts:['0.1–0.2','0.2–0.4','0.5–0.6','0.4–0.6'],ans:1,exp:'Normal VD/VT = 0.2–0.4 (approximately 30% of each breath is wasted in dead space). Formula: VD/VT = (PaCO₂ − PeCO₂) / PaCO₂. Elevated VD/VT means more wasted ventilation.'},
+      ]
+    },
+    {
+      id:'L2S3',title:'PAO₂ & A-a Gradient',
+      content:`<h3>🔬 PAO₂ & A-a Gradient</h3>
+<h4>Alveolar Air Equation (Full)</h4>
+<div class="ls-fact"><strong>PAO₂ = [(PB − PH₂O) × FiO₂] − (PaCO₂ / RQ)</strong><br>
+Where: PB = barometric pressure (760 mmHg), PH₂O = water vapor (47 mmHg), RQ = 0.8</div>
+<h4>Simplified Equation (Room Air, Sea Level)</h4>
+<div class="ls-fact"><strong>PAO₂ = 150 − (1.25 × PaCO₂)</strong><br>
+Normal: PaCO₂ = 40 → PAO₂ = 150 − 50 = <strong>100 mmHg</strong></div>
+<h4>A-a Gradient</h4>
+<div class="ls-fact"><strong>A-a = PAO₂ − PaO₂</strong><br>
+Normal value on room air: <strong>5–10 mmHg</strong><br>
+Elevated gradient → impaired gas exchange (shunt, V/Q mismatch, pulmonary edema)</div>
+<h4>P/F Ratio</h4>
+<div class="ls-fact"><strong>P/F = PaO₂ / FiO₂</strong><br>
+Normal: > 350–400 | Impairment: < 300 | Moderate-Severe ARDS: < 200 | Severe ARDS: < 100</div>
+<h4>Clinical Example</h4>
+<p>45-year-old woman, FiO₂ 70%, PaO₂ 50 mmHg, PaCO₂ 40 mmHg, sea level:</p>
+<ul class="ls-list">
+  <li>PAO₂ = [(760−47) × 0.70] − (40/0.8) = 499.1 − 50 = <strong>449.1 mmHg</strong></li>
+  <li>A-a gradient = 449.1 − 50 = <strong>399.1 mmHg</strong> (severely elevated)</li>
+  <li>P/F ratio = 50 / 0.70 = <strong>71.4</strong> (severe ARDS)</li>
+</ul>
+<h4>Oxygen Diffusion Gradient</h4>
+<div class="ls-table"><table><tr><th>Location</th><th>O₂ (torr)</th><th>CO₂ (torr)</th></tr>
+<tr><td>Air</td><td>160</td><td>0.3</td></tr>
+<tr><td>Trachea</td><td>148</td><td>20</td></tr>
+<tr><td>Alveoli</td><td>101</td><td>40</td></tr>
+<tr><td>Tissues</td><td>45</td><td>50</td></tr>
+</table></div>`,
+      questions:[
+        {q:'Using the simplified alveolar air equation, if PaCO₂ = 50 mmHg (room air, sea level), PAO₂ = ?',opts:['100 mmHg','87.5 mmHg','112.5 mmHg','130 mmHg'],ans:1,exp:'PAO₂ = 150 − (1.25 × PaCO₂) = 150 − (1.25 × 50) = 150 − 62.5 = 87.5 mmHg. As CO₂ rises (hypoventilation), available alveolar O₂ decreases — this is why hypoventilation causes hypoxemia.'},
+        {q:'A patient on room air has PaO₂ of 60 mmHg and a calculated PAO₂ of 100 mmHg. Their A-a gradient is:',opts:['40 mmHg — significantly elevated','10 mmHg — within normal limits','60 mmHg — the PaO₂ value','0 mmHg — no gradient'],ans:0,exp:'A-a = PAO₂ − PaO₂ = 100 − 60 = 40 mmHg. Normal is 5–10 mmHg. A markedly elevated A-a gradient indicates a gas exchange defect — the alveoli have O₂ but it is not crossing into the blood (shunt, V/Q mismatch, pulmonary edema).'},
+        {q:'A patient on FiO₂ 0.40 has PaO₂ 100 mmHg. Their P/F ratio is:',opts:['40','100','250','400'],ans:2,exp:'P/F = PaO₂ / FiO₂ = 100 / 0.40 = 250. This is below the 300 threshold, indicating mild-moderate oxygenation impairment despite receiving supplemental oxygen.'},
+      ]
+    },
+  ]
+},
+{
+  id:'L3',num:3,title:'Pharmacology Calculations & Normal Values',color:'#D97706',icon:'🧪',
+  sections:[
+    {
+      id:'L3S1',title:'ABG Normal Values & Clinical Interpretation',
+      content:`<h3>🩸 ABG Normal Values</h3>
+<div class="ls-table"><table><tr><th>Parameter</th><th>Normal Arterial</th><th>Acceptable Range</th><th>Measurement</th></tr>
+<tr><td>pH</td><td>7.40</td><td>7.35–7.45</td><td>Sanz Electrode</td></tr>
+<tr><td>PaCO₂</td><td>40 torr</td><td>35–45 torr</td><td>Severinghaus Electrode</td></tr>
+<tr><td>PaO₂</td><td>97 torr</td><td>80–100 torr</td><td>Clark Electrode</td></tr>
+<tr><td>SaO₂</td><td>98%</td><td>95–100%</td><td>—</td></tr>
+<tr><td>HCO₃⁻</td><td>24 mEq/L</td><td>22–26 mEq/L</td><td>—</td></tr>
+<tr><td>BE</td><td>0</td><td>-2 to +2</td><td>—</td></tr>
+<tr><td>Hb</td><td>14 g/dL</td><td>12–16 g/dL</td><td>—</td></tr>
+<tr><td>CaO₂</td><td>20 Vol%</td><td>17–20 Vol%</td><td>—</td></tr>
+</table></div>
+<h4>PaCO₂ Clinical Decision Table</h4>
+<div class="ls-table"><table><tr><th>PaCO₂</th><th>Interpretation</th><th>RT Response</th></tr>
+<tr><td>35–45 torr</td><td>Normal ventilation</td><td>Maintain settings; do NOT start mechanical ventilation</td></tr>
+<tr><td>> 45 torr</td><td>Hypoventilation</td><td>Initiate/increase ventilation; reduce mechanical dead space</td></tr>
+<tr><td>< 35 torr</td><td>Hyperventilation</td><td>Decrease ventilation if PaO₂ is high; find underlying cause</td></tr>
+</table></div>
+<h4>PaO₂ Clinical Decision Table</h4>
+<div class="ls-table"><table><tr><th>PaO₂</th><th>FiO₂</th><th>Problem</th><th>Response</th></tr>
+<tr><td>80–100</td><td>Any</td><td>Acceptable</td><td>Maintain settings, check SO₂ & Hb</td></tr>
+<tr><td>< 80</td><td>0.21–0.59</td><td>V/Q mismatch or poor ventilation</td><td>↑ FiO₂ up to 0.60; ↑ ventilation if high PaCO₂</td></tr>
+<tr><td>< 80</td><td>≥ 0.60</td><td>Shunt / refractory hypoxemia</td><td>Start or increase CPAP or PEEP</td></tr>
+<tr><td>> 100</td><td>Any</td><td>Hyperoxemia</td><td>Decrease FiO₂, PEEP, or CPAP</td></tr>
+</table></div>
+<h4>Classic COPD ABG Pattern</h4>
+<div class="ls-fact">pH 7.36 | PaO₂ 58 | PaCO₂ 62 | HCO₃⁻ 36<br>
+= <strong>Compensated chronic respiratory acidosis with hypoxemia</strong><br>
+⚠️ High FiO₂ can cause oxygen-induced hypoventilation in COPD patients — loss of hypoxic drive!</div>`,
+      questions:[
+        {q:'A patient has PaCO₂ = 55 torr. According to the clinical decision table, the RT should:',opts:['Decrease ventilation since PaCO₂ is normal','Do nothing — this is within normal range','Initiate or increase ventilation','Decrease FiO₂'],ans:2,exp:'PaCO₂ > 45 torr = patient is NOT ventilating adequately. The RT should initiate or increase ventilation, remove/decrease mechanical dead space, and assess the patient urgently.'},
+        {q:'A COPD patient has pH 7.36, PaCO₂ 62, HCO₃⁻ 36, PaO₂ 58. This ABG represents:',opts:['Acute respiratory acidosis without compensation','Metabolic alkalosis','Compensated chronic respiratory acidosis with hypoxemia','Normal findings for a COPD patient — no action needed'],ans:2,exp:'HCO₃⁻ 36 (elevated) = kidneys have compensated for chronically elevated CO₂. pH 7.36 is nearly normal = compensated. PaO₂ 58 = hypoxemia. BEWARE: high FiO₂ can cause O₂-induced hypoventilation in COPD by removing the hypoxic drive.'},
+        {q:'A patient has PaO₂ < 80 despite FiO₂ > 0.60. The most appropriate RT intervention is:',opts:['Continue increasing FiO₂ without limit','Start or increase CPAP or PEEP','Intubate immediately','Decrease FiO₂ to prevent toxicity'],ans:1,exp:'When PaO₂ is < 80 despite FiO₂ ≥ 0.60, this indicates shunt or refractory hypoxemia — simply increasing FiO₂ will not fix it. CPAP (spontaneous breathing) or PEEP (on ventilator) recruits collapsed alveoli and improves oxygenation.'},
+      ]
+    },
+    {
+      id:'L3S2',title:'CBC — Complete Blood Count',
+      content:`<h3>🔴 CBC — Complete Blood Count</h3>
+<div class="ls-table"><table><tr><th>Component</th><th>Normal Values</th><th>Low</th><th>High</th></tr>
+<tr><td>RBC</td><td>4–6 mill/mm³</td><td>Anemia (blood loss, hemorrhage)</td><td>Polycythemia (chronic hypoxemia, COPD)</td></tr>
+<tr><td>Hemoglobin (Hb)</td><td>12–16 g/dL</td><td>Anemia</td><td>Polycythemia</td></tr>
+<tr><td>Hematocrit (Hct)</td><td>40–50%</td><td>Anemia</td><td>Polycythemia</td></tr>
+<tr><td>WBC</td><td>5,000–10,000/mm³</td><td>Leukopenia → viral infection (antivirals)</td><td>Leukocytosis → bacterial infection (antibiotics)</td></tr>
+</table></div>
+<h4>White Blood Cell Types</h4>
+<div class="ls-table"><table><tr><th>WBC Type</th><th>% Normal</th><th>Clinical Significance</th></tr>
+<tr><td>Neutrophils (Bands)</td><td>4% (immature)</td><td>↑ with bacterial infections</td></tr>
+<tr><td>Neutrophils (Segs)</td><td>60% (mature)</td><td>↓ with bacterial infections</td></tr>
+<tr><td>Eosinophils</td><td>2%</td><td>↑ with asthma and allergic reactions</td></tr>
+<tr><td>Monocytes</td><td>3%</td><td>Associated with tuberculosis</td></tr>
+<tr><td>Lymphocytes</td><td>30%</td><td>General immune response</td></tr>
+<tr><td>Basophils</td><td>1%</td><td>Allergic/inflammatory responses</td></tr>
+</table></div>
+<div class="ls-fact"><strong>Key RT fact:</strong> Hb carries 1.34 mL of O₂ per gram. This is the constant in the CaO₂ formula:<br>
+CaO₂ = (Hb × 1.34 × SaO₂) + (PaO₂ × 0.003)</div>`,
+      questions:[
+        {q:'A patient\'s CBC shows elevated WBC (leukocytosis) of 18,000/mm³. This most likely indicates:',opts:['Viral infection — recommend antivirals','Bacterial infection — recommend antibiotics','Anemia — check hemoglobin','Normal finding — no action needed'],ans:1,exp:'Leukocytosis (WBC > 10,000) = bacterial infection → recommend antibiotics. Leukopenia (WBC < 5,000) = viral infection → recommend antivirals. Eosinophilia → asthma/allergic reaction. Monocytosis → tuberculosis.'},
+        {q:'A COPD patient has a hematocrit of 56%. This elevated value (polycythemia) is most likely caused by:',opts:['Acute blood loss','Bacterial pneumonia','Chronic tissue hypoxemia stimulating RBC production','High FiO₂ therapy'],ans:2,exp:'Polycythemia (high RBC/Hb/Hct) in COPD results from chronic tissue hypoxemia — the body produces more red blood cells to carry more oxygen. This is a compensatory mechanism but increases blood viscosity.'},
+        {q:'Which WBC type is elevated with asthma and allergic reactions?',opts:['Neutrophils (Bands)','Monocytes','Lymphocytes','Eosinophils'],ans:3,exp:'Eosinophils (~2% normally) are elevated with asthma and allergic reactions. Monocytes are associated with tuberculosis. Bands (immature neutrophils) increase with bacterial infections. Lymphocytes are general immune cells (30% normally).'},
+      ]
+    },
+    {
+      id:'L3S3',title:'BMP — Chemistry & Electrolytes',
+      content:`<h3>🧪 Basic Metabolic Panel (BMP) — Electrolytes & Chemistry</h3>
+<p>Electrolytes are essential for normal metabolism, closely linked to fluid levels, muscle function (including cardiac), and kidney function. Imbalances cause muscle weakness, nausea, lethargy, and mental changes.</p>
+<div class="ls-table"><table><tr><th>Electrolyte</th><th>Normal</th><th>Low (Hypo-)</th><th>High (Hyper-)</th></tr>
+<tr><td>Potassium K⁺</td><td>3.5–4.5 mEq/L</td><td>Hypokalemia: metabolic alkalosis, vomiting, flattened T waves</td><td>Hyperkalemia: kidney failure, spiked T wave, metabolic acidosis</td></tr>
+<tr><td>Sodium Na⁺</td><td>135–145 mEq/L</td><td>Hyponatremia: diuretics, vomiting, diarrhea, CHF</td><td>Hypernatremia: dehydration (Na⁺ retained in exchange for K⁺)</td></tr>
+<tr><td>Chloride Cl⁻</td><td>90–100 mEq/L</td><td>Hypochloremia → metabolic alkalosis</td><td>Hyperchloremia → metabolic acidosis</td></tr>
+<tr><td>HCO₃⁻</td><td>22–26 mEq/L</td><td>↓HCO₃⁻ → metabolic acidosis</td><td>↑HCO₃⁻ → metabolic alkalosis</td></tr>
+</table></div>
+<h4>Kidney Function Markers</h4>
+<div class="ls-table"><table><tr><th>Test</th><th>Normal</th><th>Elevated means</th></tr>
+<tr><td>Creatinine</td><td>0.7–1.3 mg/dL</td><td>Kidney failure (more specific than BUN)</td></tr>
+<tr><td>BUN</td><td>8–25 mg/dL</td><td>Kidney failure</td></tr>
+</table></div>
+<h4>Critical Relationship — HCO₃⁻ vs PCO₂</h4>
+<div class="ls-fact">⬆ HCO₃⁻ → metabolic alkalosis &nbsp;&nbsp;|&nbsp;&nbsp; ⬆ PCO₂ → respiratory acidosis<br>
+⬇ HCO₃⁻ → metabolic acidosis &nbsp;&nbsp;|&nbsp;&nbsp; ⬇ PCO₂ → respiratory alkalosis<br>
+<em>HCO₃⁻ and PCO₂ changes have OPPOSITE effects on acid-base status!</em></div>`,
+      questions:[
+        {q:'A patient has low HCO₃⁻ (18 mEq/L) and low pH. This indicates:',opts:['Metabolic alkalosis','Respiratory acidosis','Metabolic acidosis','Respiratory alkalosis'],ans:2,exp:'HCO₃⁻ < 22 mEq/L + low pH = metabolic acidosis. Compare: ↑CO₂ causes respiratory acidosis; ↓HCO₃⁻ causes metabolic acidosis. They go in opposite directions for the same acid-base outcome.'},
+        {q:'Which electrolyte imbalance is associated with metabolic alkalosis and flattened T waves on ECG?',opts:['Hyperkalemia','Hypokalemia','Hypernatremia','Hypochloremia'],ans:1,exp:'Hypokalemia (K⁺ < 3.5 mEq/L) is associated with metabolic alkalosis, excessive excretion, and flattened T waves on ECG. Hyperkalemia (K⁺ high) → spiked T waves and metabolic acidosis (often from kidney failure).'},
+        {q:'Which kidney function test is more specific for kidney failure?',opts:['BUN (Blood Urea Nitrogen)','Creatinine','Hematocrit','Electrolyte panel'],ans:1,exp:'Creatinine (0.7–1.3 mg/dL) is more specific for kidney failure than BUN. Both are elevated in kidney failure, but BUN can be elevated for other reasons (high protein diet, dehydration). Creatinine is a direct product of muscle metabolism excreted only by kidneys.'},
+      ]
+    },
+  ]
+},
+];
+
+/* ── LESSON STYLES (injected dynamically) ── */
+(function(){
+const s=document.createElement('style');
+s.textContent=`
+.ls-wrap{display:grid;grid-template-columns:220px 1fr;gap:0;height:100%;min-height:520px}
+.ls-sidebar{background:rgba(3,3,20,0.7);border-right:1px solid rgba(123,111,255,0.15);padding:12px 0;overflow-y:auto;min-height:520px}
+.ls-sidebar-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 14px 10px}
+.ls-lesson-row{padding:8px 14px;cursor:pointer;transition:background .18s;border-left:2px solid transparent}
+.ls-lesson-row.active{background:rgba(123,111,255,0.1);border-left-color:var(--purple)}
+.ls-lesson-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.ls-lesson-sub{font-size:11px;color:var(--text3)}
+.ls-section-row{padding:6px 14px 6px 24px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .18s}
+.ls-section-row:hover:not(.locked){background:rgba(255,255,255,0.03)}
+.ls-section-row.done .ls-sec-icon{color:var(--teal);text-shadow:0 0 10px rgba(0,255,209,0.6)}
+.ls-section-row.active .ls-sec-name{color:var(--purple3);text-shadow:0 0 8px rgba(123,111,255,0.5)}
+.ls-section-row.locked{opacity:.4;cursor:not-allowed}
+.ls-sec-icon{font-size:13px;flex-shrink:0}
+.ls-sec-name{font-size:12px;color:var(--text2)}
+.ls-main{overflow-y:auto;padding:20px 22px;min-height:520px}
+.ls-main h3{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;text-shadow:0 0 14px rgba(123,111,255,0.3)}
+.ls-main h4{font-size:13px;font-weight:700;color:var(--text);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.ls-main p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+.ls-fact{background:rgba(123,111,255,0.08);border:1px solid rgba(123,111,255,0.25);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.65;margin:12px 0;box-shadow:inset 0 0 20px rgba(123,111,255,0.04)}
+.ls-table{overflow-x:auto;margin:10px 0}
+.ls-table table{width:100%;border-collapse:collapse;font-size:12px}
+.ls-table th{background:rgba(123,111,255,0.12);color:var(--purple3);padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid rgba(123,111,255,0.2)}
+.ls-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text2);vertical-align:top}
+.ls-table tr:last-child td{border-bottom:none}
+.ls-table tr:hover td{background:rgba(255,255,255,0.02)}
+.ls-list{font-size:13px;color:var(--text2);line-height:1.8;padding-left:18px;margin:8px 0}
+.ls-list li{margin-bottom:4px}
+.ls-quiz-banner{background:rgba(0,255,209,0.06);border:1px solid rgba(0,255,209,0.25);border-radius:12px;padding:14px 18px;text-align:center;margin-top:20px}
+.ls-quiz-banner p{font-size:14px;color:var(--text2);margin-bottom:12px}
+.ls-section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ls-section-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;font-family:'Space Grotesk',sans-serif}
+.ls-section-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.ls-q-counter{font-size:11px;color:var(--text3);text-align:right;margin-bottom:10px}
+.ls-q-result{text-align:center;padding:20px 0}
+.ls-q-result .big-emoji{font-size:48px;display:block;margin-bottom:12px}
+.ls-progress-bar-outer{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin:8px 0 16px;overflow:hidden}
+.ls-progress-bar-inner{height:100%;border-radius:2px;transition:width .5s ease}
+@media(max-width:580px){.ls-wrap{grid-template-columns:1fr;}.ls-sidebar{min-height:auto;max-height:180px;border-right:none;border-bottom:1px solid rgba(123,111,255,0.15);}}
+`;
+document.head.appendChild(s);
+})();
+
+/* ── LESSON ENGINE ── */
+let lessonState={lessonIdx:0,sectionIdx:0,phase:'read',qIdx:0,qCorrect:0,qAnswered:false};
+
+function openRoom_lessons(){
+  const r={id:'lessons',icon:'📖',color:'#C026D3',name:"Mr. Mendoza's Lessons"};
+  openModal(r.icon,r.color,r.name,'Read each section, then answer questions to unlock the next',buildLessonHTML());
+}
+
+function buildLessonHTML(){
+  const ls=lessonState;
+  const lesson=LESSONS[ls.lessonIdx];
+  const sec=lesson.sections[ls.sectionIdx];
+  const totalSecs=LESSONS.reduce((a,l)=>a+l.sections.length,0);
+  const doneSecs=LESSONS.slice(0,ls.lessonIdx).reduce((a,l)=>a+l.sections.length,0)+ls.sectionIdx+(ls.phase==='done'?1:0);
+
+  // Sidebar
+  let sidebar='<div class="ls-sidebar"><div class="ls-sidebar-head">Course outline</div>';
+  LESSONS.forEach((l,li)=>{
+    const lessonDone=getLessonProgress(li);
+    sidebar+=`<div class="ls-lesson-row ${li===ls.lessonIdx?'active':''}" onclick="jumpLesson(${li})">
+      <div class="ls-lesson-title">${l.icon} Lesson ${l.num}</div>
+      <div class="ls-lesson-sub">${l.title}</div>
+    </div>`;
+    if(li===ls.lessonIdx || lessonUnlocked(li)){
+      l.sections.forEach((s,si)=>{
+        const secDone=isSectionDone(li,si);
+        const secLocked=!isSectionUnlocked(li,si);
+        const secActive=li===ls.lessonIdx&&si===ls.sectionIdx;
+        sidebar+=`<div class="ls-section-row ${secDone?'done':''} ${secActive?'active':''} ${secLocked?'locked':''}" onclick="${secLocked?'':'jumpSection('+li+','+si+')'}">
+          <span class="ls-sec-icon">${secLocked?'🔒':secDone?'✅':'○'}</span>
+          <span class="ls-sec-name">${s.title}</span>
+        </div>`;
+      });
+    }
+  });
+  sidebar+='</div>';
+
+  // Main content
+  let main='<div class="ls-main">';
+  // Overall progress
+  main+=`<div class="ls-progress-bar-outer"><div class="ls-progress-bar-inner" style="width:${Math.round(doneSecs/totalSecs*100)}%;background:linear-gradient(90deg,${lesson.color},var(--teal))"></div></div>`;
+
+  if(ls.phase==='read'){
+    main+=`<div class="ls-section-header">
+      <div class="ls-section-num" style="background:${lesson.color}22;color:${lesson.color}">${ls.lessonIdx+1}.${ls.sectionIdx+1}</div>
+      <div class="ls-section-title">${sec.title}</div>
+    </div>`;
+    main+=sec.content;
+    main+=`<div class="ls-quiz-banner">
+      <p>Ready to test your knowledge on <strong>${sec.title}</strong>?</p>
+      <button class="a-next-btn teal" onclick="startSectionQuiz()">Take Quiz (${sec.questions.length} questions) →</button>
+    </div>`;
+  } else if(ls.phase==='quiz'){
+    const q=sec.questions[ls.qIdx];
+    const opts=q.opts.map((o,i)=>`<button class="a-opt" id="lsq${i}" onclick="lsAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+    main+=`<div class="ls-section-header">
+      <div class="ls-section-num" style="background:${lesson.color}22;color:${lesson.color}">${ls.lessonIdx+1}.${ls.sectionIdx+1}</div>
+      <div class="ls-section-title">${sec.title} — Quiz</div>
+    </div>
+    <div class="ls-q-counter">Question ${ls.qIdx+1} of ${sec.questions.length}</div>
+    <div class="a-q-box">${q.q}</div>
+    <div class="a-opts">${opts}</div>
+    <div class="a-exp-box" id="ls-exp" style="display:none"></div>
+    <button class="a-next-btn" id="ls-nxt" style="display:none" onclick="lsNextQ()">
+      ${ls.qIdx===sec.questions.length-1?'See results':'Next question →'}
+    </button>`;
+  } else if(ls.phase==='section-done'){
+    const allRight=ls.qCorrect===sec.questions.length;
+    const isLast=ls.lessonIdx===LESSONS.length-1&&ls.sectionIdx===lesson.sections.length-1;
+    const nextSecInLesson=ls.sectionIdx<lesson.sections.length-1;
+    const nextLesson=ls.lessonIdx<LESSONS.length-1&&ls.sectionIdx===lesson.sections.length-1;
+    main+=`<div class="ls-q-result">
+      <span class="big-emoji">${allRight?'🎯':ls.qCorrect>=Math.ceil(sec.questions.length*0.6)?'✅':'📚'}</span>
+      <div class="score-title" style="color:${allRight?'var(--teal)':ls.qCorrect>=Math.ceil(sec.questions.length*0.6)?'var(--amber)':'var(--coral)'}">${allRight?'Perfect!':ls.qCorrect>=Math.ceil(sec.questions.length*0.6)?'Section passed!':'Try again'}</div>
+      <div class="score-sub">${ls.qCorrect} / ${sec.questions.length} correct on <strong>${sec.title}</strong></div>
+      ${ls.qCorrect>=Math.ceil(sec.questions.length*0.6)?
+        (isLast?
+          `<div style="margin:20px 0;font-size:15px;color:var(--teal);font-weight:700;text-shadow:0 0 16px rgba(0,255,209,0.5)">🎓 You completed all 3 lessons!</div>
+          <button class="a-next-btn teal" onclick="closeModal()">Finish course</button>`:
+          nextSecInLesson?
+            `<button class="a-next-btn teal" onclick="lsAdvance()">Next section: ${lesson.sections[ls.sectionIdx+1].title} →</button>`:
+            nextLesson?
+              `<button class="a-next-btn teal" onclick="lsAdvance()">Start Lesson ${LESSONS[ls.lessonIdx+1].num}: ${LESSONS[ls.lessonIdx+1].title} →</button>`:
+              `<button class="a-next-btn teal" onclick="closeModal()">Complete!</button>`
+        ):
+        `<button class="a-next-btn red" onclick="retrySection()">Review content again</button>
+        <button class="a-next-btn" style="margin-left:8px" onclick="retryQuiz()">Retry quiz</button>`
+      }
+    </div>`;
+  }
+  main+='</div>';
+
+  return`<div class="ls-wrap">${sidebar}${main}</div>`;
+}
+
+function getLessonProgress(li){
+  const l=LESSONS[li];
+  return l.sections.every((_,si)=>isSectionDone(li,si));
+}
+function isSectionDone(li,si){
+  return !!(prog.rp['ls_'+li+'_'+si]&&prog.rp['ls_'+li+'_'+si].done);
+}
+function isSectionUnlocked(li,si){
+  if(li===0&&si===0)return true;
+  if(si>0)return isSectionDone(li,si-1);
+  return getLessonProgress(li-1);
+}
+function lessonUnlocked(li){return li===0||getLessonProgress(li-1);}
+
+function jumpLesson(li){
+  if(!lessonUnlocked(li)){showNotif('🔒 Locked','Complete the previous lesson first!');return;}
+  lessonState.lessonIdx=li;lessonState.sectionIdx=0;lessonState.phase='read';
+  lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function jumpSection(li,si){
+  if(!isSectionUnlocked(li,si)){showNotif('🔒 Locked','Complete the previous section first!');return;}
+  lessonState.lessonIdx=li;lessonState.sectionIdx=si;lessonState.phase='read';
+  lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function startSectionQuiz(){
+  lessonState.phase='quiz';lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function lsAnswer(i){
+  if(lessonState.qAnswered)return;
+  lessonState.qAnswered=true;
+  const sec=LESSONS[lessonState.lessonIdx].sections[lessonState.sectionIdx];
+  const q=sec.questions[lessonState.qIdx];
+  const ok=i===q.ans;
+  if(ok)lessonState.qCorrect++;
+  q.opts.forEach((_,j)=>{const b=document.getElementById('lsq'+j);b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i)b.classList.add('bad');});
+  document.getElementById('ls-exp').innerHTML=q.exp;
+  document.getElementById('ls-exp').style.display='block';
+  document.getElementById('ls-nxt').style.display='inline-flex';
+  addXP(ok?15:2,'');
+  markRoom('ls_'+lessonState.lessonIdx+'_'+lessonState.sectionIdx,ok?1:0,1);
+}
+function lsNextQ(){
+  lessonState.qAnswered=false;
+  lessonState.qIdx++;
+  const sec=LESSONS[lessonState.lessonIdx].sections[lessonState.sectionIdx];
+  if(lessonState.qIdx>=sec.questions.length){
+    // Done with this section's quiz
+    const passed=lessonState.qCorrect>=Math.ceil(sec.questions.length*0.6);
+    if(passed){
+      if(!prog.rp['ls_'+lessonState.lessonIdx+'_'+lessonState.sectionIdx])prog.rp['ls_'+lessonState.lessonIdx+'_'+lessonState.sectionIdx]={s:0,c:0,t:0,done:false};
+      prog.rp['ls_'+lessonState.lessonIdx+'_'+lessonState.sectionIdx].done=true;
+      saveProg();updateRoomGrid();
+      addXP(30,'Section complete!');
+      // Check lesson complete
+      if(getLessonProgress(lessonState.lessonIdx)){
+        prog.badges++;saveProg();updateHUD();
+        showNotif('🎓 Lesson complete!','Lesson '+(lessonState.lessonIdx+1)+' mastered!');
+      }
+    }
+    lessonState.phase='section-done';
+    document.getElementById('modal-body').innerHTML=buildLessonHTML();
+    return;
+  }
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function retrySection(){
+  lessonState.phase='read';lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function retryQuiz(){
+  lessonState.phase='quiz';lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+function lsAdvance(){
+  const lesson=LESSONS[lessonState.lessonIdx];
+  if(lessonState.sectionIdx<lesson.sections.length-1){
+    lessonState.sectionIdx++;
+  } else {
+    lessonState.lessonIdx++;
+    lessonState.sectionIdx=0;
+  }
+  lessonState.phase='read';lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
+  document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+
+/* ── INIT ── */
+loadProg();updateHUD();
+updateRoomGrid();
+observeReveal();
+setTimeout(()=>showNotif('🫁 Welcome to RCARE-101!','Choose a room to start earning XP.'),1000);
+</script>
+</body>
+</html>
