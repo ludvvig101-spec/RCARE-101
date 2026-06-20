@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0"/>
 <title>RCARE-101 — Respiratory Therapy School</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -20,7 +20,7 @@
   --gc:0 0 20px rgba(255,77,109,0.7),0 0 60px rgba(255,77,109,0.35),0 0 120px rgba(255,77,109,0.15);
   --ga:0 0 20px rgba(255,159,28,0.7),0 0 60px rgba(255,159,28,0.35),0 0 120px rgba(255,159,28,0.15);
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;min-height:100vh;background-image:linear-gradient(rgba(123,111,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(123,111,255,0.025) 1px,transparent 1px);background-size:48px 48px}
 
 /* ── SCROLLBAR ── */
@@ -82,7 +82,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:fl
 .section-sub{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:48px}
 
 /* ── ROOM GRID ── */
-.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px}
 .room-card{background:rgba(3,3,10,0.8);border:1px solid rgba(123,111,255,0.12);border-radius:20px;padding:28px;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden;backdrop-filter:blur(8px)}
 .room-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1,rgba(123,111,255,.06)),transparent 60%);opacity:0;transition:opacity .35s;border-radius:20px}
 .room-card::after{content:'';position:absolute;inset:-1px;border-radius:21px;border:1px solid transparent;background:linear-gradient(135deg,var(--c1,rgba(123,111,255,0)),transparent) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;opacity:0;transition:opacity .35s}
@@ -125,12 +125,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:fl
 #modal-sub{font-size:12px;color:var(--text3)}
 #modal-close{background:rgba(255,255,255,0.06);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px;transition:all .2s}
 #modal-close:hover{background:rgba(255,255,255,0.1);color:var(--text)}
-#modal-body{overflow-y:auto;flex:1;padding:0}
+#modal-body{overflow-y:auto;flex:1;padding:0;min-height:0;scroll-padding-bottom:20px}
 #modal-body::-webkit-scrollbar{width:4px}
 #modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+/* Ensure last child in modal-body always has breathing room */
+#modal-body > *{padding-bottom:env(safe-area-inset-bottom,0px)}
 
 /* ── ACTIVITY STYLES ── */
-.av{padding:20px 22px}
+.av{padding:20px 22px 32px}
 .a-prog-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:18px}
 .a-prog-fill{height:100%;border-radius:2px;transition:width .4s}
 .a-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:100px;margin-bottom:12px}
@@ -278,17 +280,252 @@ footer{position:relative;z-index:1;text-align:center;padding:48px 24px;border-to
 footer p{font-size:13px;color:var(--text3)}
 footer strong{color:var(--text2);font-weight:600}
 
-@media(max-width:600px){
-  .room-grid{grid-template-columns:1fr}
-  .form-inputs{grid-template-columns:1fr}
-  .abg-grid{grid-template-columns:1fr}
-  .match-wrap{grid-template-columns:1fr}
-  .prog-grid{grid-template-columns:1fr}
-  .v-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-stats{gap:20px}
-  nav{padding:10px 14px}
-  .xp-pill,.badge-pill{display:none}
+/* ═══════════════════════════════════════
+   CROSS-PLATFORM RESPONSIVE SYSTEM
+   Breakpoints: 390 | 480 | 600 | 768 | 1024+
+═══════════════════════════════════════ */
+
+/* ── BASE TOUCH & iOS FIXES ── */
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
 }
+body{
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+}
+/* Momentum scrolling on iOS for all scrollable areas */
+#modal-body,
+.ls-sidebar,
+.ls-main{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+/* Prevent iOS input zoom — ALL inputs/selects MUST be 16px on mobile */
+input,select,textarea{font-size:16px!important}
+
+/* ── SAFE AREAS (iPhone notch / Dynamic Island / home indicator) ── */
+nav{
+  padding-top:max(14px, env(safe-area-inset-top, 14px));
+  padding-left:max(24px, env(safe-area-inset-left, 24px));
+  padding-right:max(24px, env(safe-area-inset-right, 24px));
+}
+#hero{
+  padding-top:max(100px, calc(80px + env(safe-area-inset-top, 0px)));
+  padding-left:max(24px, env(safe-area-inset-left, 24px));
+  padding-right:max(24px, env(safe-area-inset-right, 24px));
+}
+#modal-box{
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+footer{
+  padding-bottom:max(48px, calc(24px + env(safe-area-inset-bottom, 0px)));
+}
+
+/* ── TOUCH TARGET SIZING (min 44×44px for WCAG) ── */
+.btn-primary,.btn-secondary,.a-next-btn,.nav-prog-btn,
+.back-btn,.room-enter-btn,.lb-tab,.lb-refresh,
+.fib-chk,.check-btn,.submit-go-btn{
+  min-height:44px;
+}
+.a-opt,.option-btn,.match-item,.fc-btns .btn{
+  min-height:48px;
+}
+.room-card{min-height:auto}
+
+/* ── LARGE DESKTOP (1024px+) ── */
+@media(min-width:1024px){
+  .room-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── TABLET (601px – 900px) ── */
+@media(max-width:900px){
+  .room-grid{grid-template-columns:repeat(2,1fr)}
+  .section-inner{display:block!important}
+  .section-inner > div + div{margin-top:32px}
+  .hero-h1{font-size:clamp(32px,6vw,56px)}
+}
+
+/* ── LARGE PHONE / SMALL TABLET (601px – 768px) ── */
+@media(max-width:768px){
+  .room-grid{grid-template-columns:repeat(2,1fr)}
+  .form-inputs{grid-template-columns:1fr 1fr}
+  .abg-grid{grid-template-columns:1fr 1fr}
+  .modal-drag{margin-top:10px}
+  #modal-box{max-height:94vh;border-radius:20px 20px 0 0}
+  #modal-header{padding:14px 16px 12px}
+  #modal-title{font-size:15px}
+  .av{padding:16px}
+  .ls-sidebar-head{display:none}
+  .ls-main h3{font-size:15px}
+  .ls-main h4{font-size:12px}
+  .ls-fact{font-size:12px;padding:10px 12px}
+  .ls-table table{font-size:11px}
+  .ls-table th,.ls-table td{padding:6px 8px}
+  .score-ring{width:96px;height:96px}
+  .score-title{font-size:18px}
+}
+
+/* ── PHONE (max 600px) ── */
+@media(max-width:600px){
+  /* Nav */
+  nav{padding:10px 16px;gap:8px}
+  .nav-logo span{display:none}
+  .xp-pill,.badge-pill{display:none}
+  .nav-prog-btn{padding:5px 10px;font-size:11px}
+
+  /* Hero */
+  #hero{padding:80px 16px 48px;text-align:center}
+  .hero-lungs{width:140px;height:112px;margin-bottom:24px}
+  .hero-eyebrow{font-size:10px;padding:5px 12px}
+  .hero-h1{font-size:clamp(28px,8vw,42px);margin-bottom:14px}
+  .hero-sub{font-size:14px;margin-bottom:28px}
+  .hero-cta-row{gap:10px;margin-bottom:40px}
+  .btn-primary,.btn-secondary{padding:12px 20px;font-size:14px}
+  .hero-stats{gap:20px;flex-wrap:wrap;justify-content:center}
+  .h-stat-n{font-size:22px}
+  .h-stat-l{font-size:10px}
+
+  /* Sections */
+  .section{padding:48px 16px}
+  .section-h2{font-size:clamp(22px,6vw,32px)}
+  .section-sub{font-size:14px;margin-bottom:28px}
+
+  /* Room grid */
+  .room-grid{grid-template-columns:1fr;gap:10px}
+  .room-card{padding:20px 18px}
+  .room-card-title{font-size:16px}
+  .room-card-icon{font-size:28px;margin-bottom:10px}
+
+  /* Modal */
+  #modal-box{max-height:96vh;border-radius:18px 18px 0 0}
+  #modal-header{padding:12px 14px 10px;gap:8px}
+  #modal-icon-wrap{width:34px;height:34px;font-size:16px}
+  #modal-title{font-size:14px}
+  #modal-sub{font-size:11px}
+  .av{padding:12px 14px}
+
+  /* Quiz / options */
+  .a-q-box{font-size:14px;padding:12px 14px}
+  .a-opt{padding:11px 14px;font-size:13px}
+  .a-exp-box{font-size:12px;padding:10px 12px}
+  .a-next-btn{padding:10px 18px;font-size:13px}
+
+  /* Flashcards */
+  .fc{min-height:160px}
+  .fc-face{min-height:160px;padding:1.25rem}
+  .fc-q{font-size:14px}
+  .fc-a{font-size:15px}
+  .fc-btns{gap:8px}
+
+  /* Fill in blank */
+  .fib-prompt{font-size:15px;padding:12px 14px}
+  .fib-row{flex-wrap:wrap}
+  .fib-chk{flex:1}
+
+  /* Formulas */
+  .form-inputs{grid-template-columns:1fr}
+  .form-eq{font-size:15px}
+  .form-result{font-size:13px}
+
+  /* ABG */
+  .abg-grid{grid-template-columns:1fr 1fr}
+
+  /* Scenarios */
+  .v-grid{grid-template-columns:repeat(3,1fr)}
+  .v-chip{padding:5px 7px}
+  .v-chip span{font-size:11px}
+  .sc-story{font-size:12px}
+
+  /* Matcher */
+  .match-wrap{grid-template-columns:1fr}
+  .match-col + .match-col{margin-top:8px}
+  .match-item{padding:10px 12px;font-size:12px}
+
+  /* Score screen */
+  .score-ring{width:88px;height:88px}
+  .score-num{font-size:20px}
+  .score-title{font-size:17px}
+  .score-sub{font-size:13px}
+  .score-btns{flex-direction:column;align-items:center}
+  .score-btns .a-next-btn{width:100%;justify-content:center}
+
+  /* Progress */
+  .prog-grid{grid-template-columns:1fr 1fr}
+  .prog-card-val{font-size:22px}
+  .room-row{flex-wrap:nowrap}
+  .room-bar{flex:0 0 60px}
+
+  /* Lessons — handled by injected lesson styles */
+  /* ls-wrap, ls-sidebar, ls-main breakpoints are in the dynamic <style> block */
+
+  /* Reference */
+  .ref-grid{grid-template-columns:1fr 1fr}
+  .ref-v{font-size:13px}
+  .ref-n{font-size:10px}
+
+  /* Tips */
+  .tip-t{font-size:13px}
+  .tip-b{font-size:12px}
+  .tip-c{padding:12px 14px}
+
+  /* Decision cards */
+  .dec-body{font-size:12px}
+  .dec-title{font-size:13px}
+
+  /* Footer */
+  footer p{font-size:12px}
+}
+
+/* ── VERY SMALL PHONES (max 390px — iPhone SE, Galaxy A series) ── */
+@media(max-width:390px){
+  nav{padding:8px 12px}
+  .hero-h1{font-size:26px}
+  .btn-primary,.btn-secondary{padding:11px 16px;font-size:13px}
+  .room-card{padding:16px 14px}
+  .abg-grid{grid-template-columns:1fr}
+  .v-grid{grid-template-columns:repeat(2,1fr)}
+  .prog-grid{grid-template-columns:1fr}
+  .a-badge{font-size:9px;padding:3px 8px}
+  .match-item{font-size:12px;padding:9px 10px}
+  #modal-header{padding:10px 12px 8px}
+  .av{padding:10px 12px}
+  .a-opt{font-size:12px;padding:10px 12px}
+  .a-q-box{font-size:13px}
+}
+
+/* ── LANDSCAPE PHONE ── */
+@media(max-height:500px) and (orientation:landscape){
+  #hero{min-height:auto;padding:70px 24px 32px}
+  .hero-lungs{display:none}
+  .hero-eyebrow{margin-bottom:12px}
+  .hero-h1{font-size:28px;margin-bottom:10px}
+  .hero-sub{display:none}
+  .hero-cta-row{margin-bottom:20px}
+  .hero-stats{margin-bottom:0}
+  #modal-box{max-height:98vh}
+  .ls-wrap{grid-template-columns:160px 1fr}
+}
+
+/* ── WINDOWS HIGH-DPI / SCALING FIX ── */
+@media(-webkit-min-device-pixel-ratio:1.25),(min-resolution:120dpi){
+  .room-card,.fc-face,#modal-box,.tip-c,.form-card,.ref-c{
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+  }
+}
+
+/* ── REDUCED MOTION (accessibility) ── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .room-card:hover{transform:none}
+  .btn-primary:hover,.btn-secondary:hover{transform:none}
+}
+
 </style>
 </head>
 <body>
@@ -299,7 +536,7 @@ footer strong{color:var(--text2);font-weight:600}
 <nav>
   <a class="nav-logo" href="#">
     <div class="nav-logo-icon">🫁</div>
-    RCARE-101
+    <span>RCARE-101</span>
   </a>
   <div class="nav-spacer"></div>
   <div id="xp-nav">
@@ -358,7 +595,7 @@ footer strong{color:var(--text2);font-weight:600}
   </div>
 
   <div class="hero-stats">
-    <div class="h-stat"><div class="h-stat-n" id="stat-rooms">13</div><div class="h-stat-l">Rooms</div></div>
+    <div class="h-stat"><div class="h-stat-n" id="stat-rooms">14</div><div class="h-stat-l">Rooms</div></div>
     <div class="h-stat"><div class="h-stat-n">75+</div><div class="h-stat-l">Flashcards</div></div>
     <div class="h-stat"><div class="h-stat-n">15+</div><div class="h-stat-l">Case Questions</div></div>
     <div class="h-stat"><div class="h-stat-n">XP</div><div class="h-stat-l">Progress Tracking</div></div>
@@ -626,6 +863,7 @@ const ROOMS=[
 {id:'ref',name:'Reference Library',icon:'📚',color:'#444441',tag:'Quick Look',tagClass:'badge-purple',desc:'Every normal range color-coded in one quick-access reference grid',xp:'+10 XP'},
 {id:'tips',name:'Study Skills Center',icon:'💡',color:'#3B6D11',tag:'Study Science',tagClass:'badge-teal',desc:'10 evidence-based learning techniques — spaced repetition, Feynman, AIDR',xp:'+20 XP'},
 {id:'lessons',name:"Mr. Mendoza's Lessons",icon:'📖',color:'#C026D3',tag:'Structured Lessons',tagClass:'badge-purple',desc:'All 3 lessons in order — read content, answer questions, unlock the next section',xp:'+200 XP'},
+{id:'pamphlet',name:"Mr. Mendoza's Study Pamphlet",icon:'📋',color:'#16A34A',tag:'Full Resource',tagClass:'badge-teal',desc:'Read the complete original pamphlet page-by-page, applying Know It → Apply It → Decide With It as you go',xp:'+250 XP'},
 ];
 
 /* ── XP & PROGRESS ── */
@@ -651,6 +889,11 @@ function getRoomPct(id){
   if(id==='lessons'){
     const total=LESSONS.reduce((a,l)=>a+l.sections.length,0);
     const done=LESSONS.reduce((a,l,li)=>a+l.sections.filter((_,si)=>isSectionDone(li,si)).length,0);
+    return total===0?0:Math.round(done/total*100);
+  }
+  if(id==='pamphlet'){
+    const total=PAMPHLET.length;
+    const done=PAMPHLET.filter((_,pi)=>isPamphletPageDone(pi)).length;
     return total===0?0:Math.round(done/total*100);
   }
   const r=prog.rp[id];
@@ -766,6 +1009,7 @@ function openRoom(id){
     case 'ref':openRef(r);break;
     case 'tips':openTips(r);break;
     case 'lessons':openRoom_lessons();break;
+    case 'pamphlet':openPamphlet();break;
   }
 }
 
@@ -813,14 +1057,14 @@ function openFlashcards(room,tagFilter){
       <div class="score-title">Deck complete!</div>
       <div class="score-sub">You knew ${got} of ${total} cards (${pct}%)</div>
       <div class="score-btns">
-        <button class="a-next-btn" onclick="openFlashcards(window._fcR,'${tagFilter}')">Shuffle again</button>
+        <button class="a-next-btn" onclick="openFlashcards(window._fcR,window._fcTag)">Shuffle again</button>
         <button class="a-next-btn teal" onclick="closeModal()">Done</button>
       </div>
     </div>`;
     addXP(30,'Deck complete!');markRoom(room.id);
     if(pct>=75){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!',room.name+' complete: '+pct+'%');}
   }
-  window._fcR=room;
+  window._fcR=room;window._fcTag=tagFilter;
   openModal(room.icon,room.color,room.name,'Tap each card to reveal the answer',render());
 }
 
@@ -1153,7 +1397,7 @@ function openProgress(){
       <div class="prog-card"><div class="prog-card-label">Total XP</div><div class="prog-card-val c-purple">${prog.xp}</div></div>
       <div class="prog-card"><div class="prog-card-label">Level</div><div class="prog-card-val c-amber">${prog.level}</div></div>
       <div class="prog-card"><div class="prog-card-label">Badges</div><div class="prog-card-val c-amber">⭐ ${prog.badges}</div></div>
-      <div class="prog-card"><div class="prog-card-label">Rooms visited</div><div class="prog-card-val c-teal">${Object.keys(prog.rp).filter(k=>!k.startsWith('ls_')).length}/${ROOMS.length}</div></div>
+      <div class="prog-card"><div class="prog-card-label">Rooms visited</div><div class="prog-card-val c-teal">${Object.keys(prog.rp).filter(k=>!k.startsWith('ls_')&&!k.startsWith('pm_')).length}/${ROOMS.length}</div></div>
     </div>
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">Room mastery</div>
     ${rows}
@@ -1177,6 +1421,19 @@ function openProgress(){
               ${done?`<span style="font-size:10px;color:var(--teal);text-shadow:0 0 8px rgba(0,255,209,0.5)">DONE</span>`:''}
             </div>`;
           }).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(123,111,255,0.1)">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px">📋 Mr. Mendoza's Study Pamphlet</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text2)">${PAMPHLET.filter((_,pi)=>isPamphletPageDone(pi)).length} / ${PAMPHLET.length} pages read</span>
+      </div>
+      ${PAMPHLET.map((p,pi)=>{
+        const done=isPamphletPageDone(pi);
+        return`<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+          <span style="font-size:11px">${done?'✅':'○'}</span>
+          <span style="font-size:11px;color:${done?'var(--teal)':'var(--text3)'}">${p.title}</span>
         </div>`;
       }).join('')}
     </div>
@@ -1520,8 +1777,8 @@ CaO₂ = (Hb × 1.34 × SaO₂) + (PaO₂ × 0.003)</div>`,
 (function(){
 const s=document.createElement('style');
 s.textContent=`
-.ls-wrap{display:grid;grid-template-columns:220px 1fr;gap:0;height:100%;min-height:520px}
-.ls-sidebar{background:rgba(3,3,20,0.7);border-right:1px solid rgba(123,111,255,0.15);padding:12px 0;overflow-y:auto;min-height:520px}
+.ls-wrap{display:grid;grid-template-columns:220px 1fr;gap:0;align-items:start}
+.ls-sidebar{position:sticky;top:0;max-height:calc(92vh - 76px);background:rgba(3,3,20,0.7);border-right:1px solid rgba(123,111,255,0.15);padding:12px 0;overflow-y:auto;overflow-x:hidden}
 .ls-sidebar-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:4px 14px 10px}
 .ls-lesson-row{padding:8px 14px;cursor:pointer;transition:background .18s;border-left:2px solid transparent}
 .ls-lesson-row.active{background:rgba(123,111,255,0.1);border-left-color:var(--purple)}
@@ -1534,12 +1791,12 @@ s.textContent=`
 .ls-section-row.locked{opacity:.4;cursor:not-allowed}
 .ls-sec-icon{font-size:13px;flex-shrink:0}
 .ls-sec-name{font-size:12px;color:var(--text2)}
-.ls-main{overflow-y:auto;padding:20px 22px;min-height:520px}
+.ls-main{padding:20px 22px;min-height:0;overflow:visible}
 .ls-main h3{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;text-shadow:0 0 14px rgba(123,111,255,0.3)}
 .ls-main h4{font-size:13px;font-weight:700;color:var(--text);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.04em}
 .ls-main p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px}
 .ls-fact{background:rgba(123,111,255,0.08);border:1px solid rgba(123,111,255,0.25);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.65;margin:12px 0;box-shadow:inset 0 0 20px rgba(123,111,255,0.04)}
-.ls-table{overflow-x:auto;margin:10px 0}
+.ls-table{overflow-x:auto;margin:10px 0;-webkit-overflow-scrolling:touch}
 .ls-table table{width:100%;border-collapse:collapse;font-size:12px}
 .ls-table th{background:rgba(123,111,255,0.12);color:var(--purple3);padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid rgba(123,111,255,0.2)}
 .ls-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text2);vertical-align:top}
@@ -1547,17 +1804,29 @@ s.textContent=`
 .ls-table tr:hover td{background:rgba(255,255,255,0.02)}
 .ls-list{font-size:13px;color:var(--text2);line-height:1.8;padding-left:18px;margin:8px 0}
 .ls-list li{margin-bottom:4px}
-.ls-quiz-banner{background:rgba(0,255,209,0.06);border:1px solid rgba(0,255,209,0.25);border-radius:12px;padding:14px 18px;text-align:center;margin-top:20px}
+.ls-quiz-banner{background:rgba(0,255,209,0.06);border:1px solid rgba(0,255,209,0.25);border-radius:12px;padding:14px 18px;text-align:center;margin-top:20px;margin-bottom:24px}
 .ls-quiz-banner p{font-size:14px;color:var(--text2);margin-bottom:12px}
 .ls-section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06)}
 .ls-section-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;font-family:'Space Grotesk',sans-serif}
 .ls-section-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
 .ls-q-counter{font-size:11px;color:var(--text3);text-align:right;margin-bottom:10px}
-.ls-q-result{text-align:center;padding:20px 0}
+.ls-q-result{text-align:center;padding:20px 0 32px}
 .ls-q-result .big-emoji{font-size:48px;display:block;margin-bottom:12px}
 .ls-progress-bar-outer{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin:8px 0 16px;overflow:hidden}
 .ls-progress-bar-inner{height:100%;border-radius:2px;transition:width .5s ease}
-@media(max-width:580px){.ls-wrap{grid-template-columns:1fr;}.ls-sidebar{min-height:auto;max-height:180px;border-right:none;border-bottom:1px solid rgba(123,111,255,0.15);}}
+@media(max-width:600px){
+  .ls-wrap{display:block}
+  .ls-sidebar{position:static;max-height:160px;height:auto;border-right:none;border-bottom:1px solid rgba(123,111,255,0.15);display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:6px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .ls-sidebar::-webkit-scrollbar{display:none}
+  .ls-lesson-sub{display:none}
+  .ls-lesson-title{font-size:11px;white-space:nowrap}
+  .ls-section-row{flex-shrink:0;padding:4px 10px;flex-direction:column;gap:2px}
+  .ls-sec-name{font-size:10px;white-space:nowrap}
+  .ls-main{padding:14px}
+}
+@media(max-height:500px) and (orientation:landscape){
+  .ls-sidebar{max-height:calc(98vh - 76px)}
+}
 `;
 document.head.appendChild(s);
 })();
@@ -1743,6 +2012,508 @@ function lsAdvance(){
   }
   lessonState.phase='read';lessonState.qIdx=0;lessonState.qCorrect=0;lessonState.qAnswered=false;
   document.getElementById('modal-body').innerHTML=buildLessonHTML();
+}
+
+/* ══════════════════════════════════════
+   📋 MR. MENDOZA'S STUDY PAMPHLET
+   Continuous read-through of the original document.
+   Each page is tagged with a Clinical Mastery Layer:
+   know = Layer 1 Know It | apply = Layer 2 Apply It | decide = Layer 3 Decide With It
+══════════════════════════════════════ */
+const LAYER_INFO={
+  know:{label:'Layer 1 · Know It',cls:'badge-purple',icon:'🧠'},
+  apply:{label:'Layer 2 · Apply It',cls:'badge-teal',icon:'🧮'},
+  decide:{label:'Layer 3 · Decide With It',cls:'badge-red',icon:'⚕️'},
+};
+function layerBadge(layer){
+  const l=LAYER_INFO[layer];
+  return`<span class="a-badge ${l.cls}" style="margin-bottom:0">${l.icon} ${l.label}</span>`;
+}
+
+const PAMPHLET=[
+{
+  id:'pm0',title:"Welcome from Mr. Mendoza",
+  content:`<h3>👋 Welcome to FCC's Respiratory Care Program!</h3>
+<p>As a respiratory therapy student, you're about to dive into essential learning that will truly impact your future patients' lives.</p>
+<div class="ls-fact"><strong>Lesson 1 — Vital Signs & Predicted Body Weight:</strong> the fundamentals of patient monitoring and PBW calculation — crucial for accurate dosing and ventilator settings.</div>
+<div class="ls-fact"><strong>Lesson 2 — Minute Ventilation & Alveolar Air Equation:</strong> the mechanics of ventilation and gas exchange — unlocking the secrets of how we breathe.</div>
+<div class="ls-fact"><strong>Lesson 3 — Pharmacology Calculations & Normal Values:</strong> ties it all together — applying foundational knowledge to handle clinical scenarios with confidence.</div>
+<p>This pamphlet walks you through all of it, page by page. After each page you'll answer a few questions tagged by mastery layer — <strong>Know It</strong>, <strong>Apply It</strong>, and <strong>Decide With It</strong> — so you're not just reading, you're building toward real clinical judgment as you go.</p>
+<p style="font-style:italic;color:var(--text3)">— Mr. Mendoza, Fresno City College Respiratory Care Program</p>`,
+  questions:[
+    {layer:'know',q:'What are the three lessons covered in this pamphlet, in order?',opts:['Pharmacology → Vital Signs → Ventilation','Vital Signs & PBW → Minute Ventilation & Alveolar Air → Pharmacology Calculations & Normal Values','ABG → CBC → BMP','Ventilator Setup → ARDS → COPD'],ans:1,exp:'The pamphlet is structured in 3 lessons: (1) Vital Signs & PBW, (2) Minute Ventilation & Alveolar Air Equation, (3) Pharmacology Calculations & Normal Values — each building on the last.'},
+  ]
+},
+{
+  id:'pm1',title:'Vital Signs Overview & Body Temperature',
+  content:`<h3>🌡️ Vital Signs Overview</h3>
+<p>Vital signs — body temperature, pulse rate, respiratory rate, blood pressure, and pulse oximetry — are essential for patient monitoring, easy to obtain, and provide valuable information. Abnormal vital signs often indicate adverse reactions to treatment, while improvement suggests effective therapy.</p>
+<div class="ls-fact"><strong>Example:</strong> decreased respiratory and heart rates in response to supplemental O₂ show that therapy is working.</div>
+<h4>Normal Body Temperature</h4>
+<div class="ls-table"><table><tr><th>Property</th><th>Value</th></tr>
+<tr><td>Average adult temp</td><td>37°C (98.6°F)</td></tr>
+<tr><td>Daily fluctuation</td><td>~0.5°C — lowest early morning, highest late afternoon</td></tr>
+<tr><td>Regulation</td><td>Hypothalamus</td></tr>
+<tr><td>Heat dissipation</td><td>Vasodilation + sweating</td></tr>
+<tr><td>Heat conservation</td><td>Vasoconstriction</td></tr>
+</table></div>
+<h4>Hyperthermia (Fever)</h4>
+<p>Definition: body temp > 38.3°C (101°F). Effects: ↑ metabolism, ↑ O₂ consumption and CO₂ production, higher heart and breathing rates — complicates management in patients with limited cardiopulmonary reserve (e.g., COPD).</p>
+<p><strong>Causes:</strong> infections (bacterial/viral/fungal), drug reactions, malignancies, head trauma, burns, pulmonary embolism, rheumatoid arthritis/lupus. <strong>FUO</strong> = fever > 3 weeks unexplained, common in HIV. <strong>Pneumonia suspicion:</strong> fever ≥ 38.9°C (102°F) for 2+ days with chills.</p>
+<h4>Hypothermia</h4>
+<p>Body temp below normal, usually from prolonged cold exposure. Body responds with shivering and vasoconstriction. Effects: ↓ O₂ consumption and CO₂ production, slow shallow breathing, reduced pulse rate.</p>
+<h4>Measurement Sites</h4>
+<div class="ls-table"><table><tr><th>Site</th><th>Note</th></tr>
+<tr><td>Oral</td><td>Alert adults; wait 10–15 min after hot/cold liquids</td></tr>
+<tr><td>Axilla</td><td>Underestimates core by 1–2°C</td></tr>
+<tr><td>Tympanic</td><td>Accurate and convenient</td></tr>
+<tr><td>Rectal</td><td>Closest to actual core temperature</td></tr>
+</table></div>`,
+  questions:[
+    {layer:'know',q:'What is the normal adult body temperature, and what structure controls it?',opts:['36°C; medulla','37°C (98.6°F); hypothalamus','38°C; pituitary gland','36.5°C; cerebral cortex'],ans:1,exp:'Normal adult temp is 37°C (98.6°F), regulated by the hypothalamus via vasodilation/sweating (dissipation) and vasoconstriction (conservation).'},
+    {layer:'decide',q:'A febrile COPD patient is becoming tachycardic and tachypneic. What does this combination signal, and why does it matter for an RT?',opts:['It is unrelated to respiratory status — ignore it','Fever raises metabolic O₂ demand and CO₂ production, which a COPD patient with limited cardiopulmonary reserve may not be able to meet — close monitoring is needed','It always means the patient needs intubation immediately','It indicates hypothermia is developing'],ans:1,exp:'Fever increases metabolic demand for O₂ and CO₂ production. A COPD patient already has limited reserve, so this combination can tip them into respiratory failure faster — the RT must monitor closely and anticipate increased ventilatory support needs.'},
+  ]
+},
+{
+  id:'pm2',title:'Pulse Rate, Pulsus Paradoxus & Alternans',
+  content:`<h3>❤️ Pulse Rate</h3>
+<div class="ls-fact"><strong>Normal adult rate:</strong> 60–100 beats/min, regular rhythm. Palpate at the radial artery using the 2nd and 3rd fingertip pads (never the thumb). Count for a full minute if irregular.</div>
+<h4>Abnormal Rates</h4>
+<div class="ls-table"><table><tr><th>Condition</th><th>Definition</th><th>Common Causes</th></tr>
+<tr><td>Tachycardia</td><td>&gt; 100/min</td><td>Exercise, fear, anxiety, low BP, anemia, fever, hypoxemia, hypercapnia, medications</td></tr>
+<tr><td>Bradycardia</td><td>&lt; 60/min</td><td>Hypothermia, brain/spinal cord injury, cardiac arrhythmias, medications</td></tr>
+</table></div>
+<h4>Influence of Ventilation on Pulse Strength</h4>
+<p>Normal inspiration causes a slight pulse pressure decrease (&lt;10 mmHg) from negative intrathoracic pressure pooling blood in the pulmonary circulation.</p>
+<div class="ls-table"><table><tr><th>Condition</th><th>Definition</th><th>Clinical Meaning</th></tr>
+<tr><td>Pulsus Paradoxus</td><td>Systolic BP drops &gt;10 mmHg during inspiration</td><td>COPD exacerbations, severe asthma — exaggerated negative intrathoracic pressure swings</td></tr>
+<tr><td>Pulsus Alternans</td><td>Alternating strong/weak pulses</td><td>Left-sided heart failure — unrelated to the breathing cycle</td></tr>
+</table></div>
+<p><strong>Mechanism of Pulsus Paradoxus:</strong> inspiration → more negative intrathoracic pressure → blood pools in pulmonary circulation → increased right ventricular volume → decreased left ventricular filling → reduced stroke volume → decreased systolic BP.</p>
+<p><strong>Central pulse palpation</strong> (carotid/femoral): use when BP is abnormally low. Avoid pressing the carotid sinus — risk of bradycardia via parasympathetic stimulation.</p>`,
+  questions:[
+    {layer:'know',q:'A pulse of 115 beats/min with normal rhythm is:',opts:['Bradycardia','Tachycardia','Pulsus alternans','Normal'],ans:1,exp:'Tachycardia = pulse > 100/min. Causes relevant to RT include hypoxemia, hypercapnia, fever, and anxiety.'},
+    {layer:'apply',q:'You measure BP during a COPD patient\'s breathing cycle: systolic drops from 130 mmHg at end-expiration to 112 mmHg at peak inspiration. What is this finding called, and is it significant?',opts:['Normal variation (18 mmHg < 10 mmHg threshold) — not significant','Pulsus Paradoxus (18 mmHg drop > 10 mmHg threshold) — clinically significant, consistent with COPD exacerbation','Pulsus Alternans — suggests left heart failure','Hypertensive crisis'],ans:1,exp:'18 mmHg exceeds the 10 mmHg Pulsus Paradoxus threshold. In a COPD patient this reflects exaggerated negative intrathoracic pressure swings during inspiration — a sign of significant airway obstruction/respiratory distress.'},
+    {layer:'decide',q:'You palpate alternating strong and weak pulses in a patient with no respiratory complaints. What should you suspect, and what is your next step?',opts:['COPD exacerbation — give bronchodilators','Pulsus Alternans, suggesting left-sided heart failure — notify the physician and assess for other heart failure signs (crackles, edema, JVD)','This is a normal finding — no action needed','Immediately start CPR'],ans:1,exp:'Pulsus Alternans (alternating strong/weak pulses) is NOT tied to the breathing cycle — it indicates left ventricular dysfunction. The RT should escalate this to the team and assess for other heart failure signs rather than treating it as a respiratory issue.'},
+  ]
+},
+{
+  id:'pm3',title:'Respiratory Rate',
+  content:`<h3>🌬️ Respiratory Rate</h3>
+<div class="ls-fact"><strong>Normal resting adult rate:</strong> 12–18 breaths/min</div>
+<div class="ls-table"><table><tr><th>Condition</th><th>Definition</th><th>Common Causes</th></tr>
+<tr><td>Tachypnea</td><td>&gt; 20/min</td><td>Exertion, fever, hypoxemia, hypercarbia, metabolic acidosis, pulmonary edema, lung fibrosis, anxiety, pain</td></tr>
+<tr><td>Bradypnea</td><td>&lt; 10/min</td><td>Traumatic brain injury, severe MI, hypothermia, anesthetics, opiate narcotics, recreational drug overdoses</td></tr>
+</table></div>
+<h4>Counting Respiratory Rate — Method</h4>
+<ol class="ls-list">
+  <li>Visual observation — watch the abdomen/chest wall move in and out</li>
+  <li>If needed, place a hand on the upper abdomen to detect diaphragmatic contraction</li>
+  <li><strong>Critical:</strong> ensure the patient is unaware their RR is being counted — awareness causes them to change their breathing</li>
+  <li>Technique: count RR immediately after evaluating pulse, keeping fingers on the wrist to give the impression you're still counting pulse</li>
+</ol>`,
+  questions:[
+    {layer:'know',q:'A patient breathing 24 breaths/min is classified as:',opts:['Bradypnea','Normal','Tachypnea','Apnea'],ans:2,exp:'Tachypnea = RR > 20/min. At 24/min this patient is tachypneic — causes include hypoxemia, hypercarbia, fever, metabolic acidosis, and anxiety.'},
+    {layer:'decide',q:'Why does the pamphlet instruct you to count respiratory rate immediately after the pulse, with fingers still on the wrist?',opts:['It saves time only','Patients who realize their breathing is being observed will consciously or unconsciously alter their rate, producing an inaccurate reading','Hospital protocol requires it for billing','It has no real clinical purpose'],ans:1,exp:'This is a deliberate clinical technique. Patient awareness changes respiratory behavior, so disguising the RR count as a continuation of pulse-taking yields a more accurate, unaltered measurement — critical for correctly assessing ventilatory status.'},
+  ]
+},
+{
+  id:'pm4',title:'Arterial Blood Pressure',
+  content:`<h3>🩺 Arterial Blood Pressure</h3>
+<p>The force exerted by the heart against systemic arteries as blood moves through them.</p>
+<div class="ls-fact"><strong>Systolic:</strong> peak force during LV contraction. <strong>Diastolic:</strong> force during ventricular relaxation. <strong>Pulse Pressure</strong> = Systolic − Diastolic (normal 30–40 mmHg).</div>
+<h4>Normal & Hypertensive Categories</h4>
+<div class="ls-table"><table><tr><th>Category</th><th>Systolic</th><th>Diastolic</th></tr>
+<tr><td>Normal</td><td>&lt; 120 mmHg</td><td>&lt; 80 mmHg</td></tr>
+<tr><td>Elevated</td><td>120–129</td><td>&lt; 80</td></tr>
+<tr><td>Stage I HTN</td><td>130–139</td><td>80–89</td></tr>
+<tr><td>Stage II HTN</td><td>&gt; 139</td><td>&gt; 89</td></tr>
+</table></div>
+<p>~90% of hypertension is essential (unknown cause) — from increased systemic vascular resistance or ventricular contraction. Consequences: CNS abnormalities, uremia, CHF, cerebral hemorrhage, hypertensive crisis.</p>
+<h4>Hypotension</h4>
+<p>Defined as: systolic &lt; 90 mmHg, OR MAP &lt; 65 mmHg, OR drop &gt; 40 mmHg from baseline.</p>
+<ul class="ls-list"><li><strong>Hypodynamic:</strong> LV failure, hypovolemia</li><li><strong>Hyperdynamic:</strong> profound vasodilation — septic shock, anaphylaxis, liver failure</li><li><strong>Postural:</strong> BP drops on standing; confirmed by supine vs. standing readings; treated with fluids</li></ul>
+<h4>Measuring BP</h4>
+<ol class="ls-list">
+  <li>Wrap cuff around upper arm, lower edge 1 inch above the antecubital fossa</li>
+  <li>Inflate 30 mmHg above where the brachial pulse disappears</li>
+  <li>Auscultate while deflating slowly (2–3 mmHg/sec)</li>
+  <li>Systolic = first Korotkoff sound. Diastolic = sounds disappear</li>
+</ol>`,
+  questions:[
+    {layer:'know',q:'Normal blood pressure is defined as:',opts:['Systolic < 130, Diastolic < 90','Systolic < 120, Diastolic < 80','Systolic < 140, Diastolic < 90','Systolic < 110, Diastolic < 70'],ans:1,exp:'Normal BP = Systolic < 120 mmHg and Diastolic < 80 mmHg per the pamphlet\'s classification table.'},
+    {layer:'apply',q:'A patient\'s BP is 145/95 mmHg on a stable outpatient visit. Where does this fall, and what is the systolic/diastolic threshold that places it there?',opts:['Elevated — systolic 120-129','Stage I Hypertension — systolic 130-139 or diastolic 80-89','Stage II Hypertension — systolic > 139 or diastolic > 89','Normal — no concern'],ans:2,exp:'145/95 exceeds both the systolic (>139) and diastolic (>89) Stage II thresholds. This patient meets criteria for Stage II Hypertension and should be flagged for physician follow-up.'},
+  ]
+},
+{
+  id:'pm5',title:'Predicted Body Weight & Tidal Volume',
+  content:`<h3>⚖️ PBW & Tidal Volume</h3>
+<p>PBW is used instead of actual weight because <strong>lung size correlates with height and sex — not body weight</strong>. Using actual weight in obese patients risks volutrauma from overdistended alveoli.</p>
+<div class="ls-fact"><strong>PBW Formulas:</strong><br>
+Men: 50 + 2.3 × (height in inches − 60) kg<br>
+Women: 45.5 + 2.3 × (height in inches − 60) kg</div>
+<div class="ls-table"><table><tr><th>Aspect</th><th>Normal Values/Settings</th><th>ARDS-Specific Settings</th></tr>
+<tr><td>Spontaneous VT</td><td>6 mL/kg PBW (5–7 range)</td><td>4–8 mL/kg PBW</td></tr>
+<tr><td>Respiratory Rate</td><td>12–18 breaths/min</td><td>25–35 breaths/min</td></tr>
+<tr><td>Minute Ventilation</td><td>~100 mL/kg PBW/min</td><td>Maintain adequate VE with higher rate</td></tr>
+<tr><td>Initial VT (Mech. Vent.)</td><td>6–8 mL/kg PBW</td><td>6 mL/kg PBW</td></tr>
+<tr><td>Initial RR</td><td>12–16 breaths/min</td><td>Higher rate as needed</td></tr>
+<tr><td>Plateau Pressure</td><td>&lt; 30 cm H₂O</td><td>&lt; 30 cm H₂O</td></tr>
+<tr><td>Driving Pressure</td><td>≤ 15 cm H₂O</td><td>≤ 15 cm H₂O</td></tr>
+</table></div>
+<h4>Rule of Thumb — Standard Initial Settings</h4>
+<ul class="ls-list"><li>VT 6 mL/kg PBW + RR 16/min, OR VT 8 mL/kg PBW + RR 12/min</li><li>VT &gt; 8 mL/kg PBW is harmful in ARDS and potentially harmful in any acute respiratory failure patient</li></ul>
+<h4>Specific Ventilation Modes</h4>
+<p><strong>SIMV:</strong> VE_TOT = (VTsp × fsp) + (VTmach × fmach)</p>
+<p><strong>PC-CMV:</strong> delivered VT depends on the set pressure change, inspiratory time, and lung mechanics. Start pressure at 10 cm H₂O above PEEP, adjust to hit target VT while keeping Pplat &lt; 30 and driving pressure ≤ 15.</p>`,
+  questions:[
+    {layer:'know',q:'Why is PBW used instead of actual body weight for ventilator tidal volume settings?',opts:['It is easier to calculate','Lung size correlates with height and sex, not body weight — using actual weight risks volutrauma','PBW already includes a BMI correction','It is required by insurance billing rules'],ans:1,exp:'Lungs do not grow with body fat. Using actual weight in an obese patient would set a dangerously high VT that overdistends alveoli — this is the core reason PBW exists.'},
+    {layer:'apply',q:'A male patient is 70 inches tall. Calculate his PBW, then his initial VT range at 6–8 mL/kg.',opts:['PBW = 50 kg; VT 300–400 mL','PBW = 73 kg; VT 438–584 mL','PBW = 68 kg; VT 408–544 mL','PBW = 80 kg; VT 480–640 mL'],ans:1,exp:'PBW (male) = 50 + 2.3×(70−60) = 50 + 23 = 73 kg. VT range = 6–8 mL/kg × 73 kg = 438–584 mL.'},
+  ]
+},
+{
+  id:'pm6',title:'Ventilator Setup Protocol & ARDS Network Guidelines',
+  content:`<h3>🖥️ Initial Ventilator Setup — Full Protocol</h3>
+<p>Based on the NIH/NHLBI ARDS Clinical Network Mechanical Ventilation Protocol.</p>
+<h4>Steps for Initial Setup</h4>
+<ol class="ls-list">
+  <li>Calculate PBW (formulas above)</li>
+  <li>Select Assist/Control mode</li>
+  <li>Set VT to 6–8 mL/kg PBW</li>
+  <li>Set initial rate to achieve baseline minute ventilation (limited by auto-PEEP development)</li>
+  <li>Adjust VT and rate to reach <strong>pH 7.30–7.45</strong> while keeping Pplat ≤ 30 cm H₂O</li>
+  <li>Set inspiratory flow rate above patient demand (may exceed 80 L/min)</li>
+  <li>Manage oxygenation to reach PaO₂ 55–80 mmHg or SpO₂ 88–95%</li>
+</ol>
+<h4>PEEP / FiO₂ Ladder (Low-PEEP strategy example)</h4>
+<div class="ls-table"><table><tr><th>FiO₂</th><th>0.3</th><th>0.4</th><th>0.5</th><th>0.6</th><th>0.7</th><th>0.8</th><th>0.9</th><th>1.0</th></tr>
+<tr><td>Low PEEP</td><td>5</td><td>5–8</td><td>8–10</td><td>10</td><td>10–14</td><td>14</td><td>14–18</td><td>20–24</td></tr>
+<tr><td>High PEEP</td><td>12–14</td><td>14–16</td><td>16–20</td><td>20</td><td>20</td><td>20–22</td><td>22</td><td>22–24</td></tr>
+</table></div>
+<p>As FiO₂ is increased, PEEP is titrated upward together with it. When FiO₂ ≤ 0.5, decrease PEEP slowly (2 cm H₂O every 8 hrs) — reestablish PEEP if the patient desaturates.</p>
+<h4>Pressure / VT Adjustment Algorithm</h4>
+<p>Check Pplat, SpO₂, RR, VT, and pH at least every 4 hours and after each PEEP/VT change:</p>
+<ul class="ls-list">
+  <li>If Pplat &gt; 30 cm H₂O → decrease VT by 1 mL/kg steps (minimum 4 mL/kg)</li>
+  <li>If Pplat &lt; 25 cm H₂O and VT &lt; 6 mL/kg → increase VT by 1 mL/kg steps until Pplat &gt; 25 or VT = 6 mL/kg</li>
+  <li>If Pplat &lt; 20 and breath stacking occurs → increase VT in 1 mL/kg increments (max 8 mL/kg)</li>
+</ul>
+<h4>Acid-Base Management on the Ventilator</h4>
+<div class="ls-fact"><strong>Acidosis (pH &lt; 7.30):</strong> if pH 7.15–7.30, increase rate until pH &gt; 7.30. If metabolic acidosis, address the underlying cause while maintaining PaCO₂ &gt; 25 mmHg.<br><br>
+<strong>Alkalosis (pH &gt; 7.45):</strong> decrease ventilator rate if possible.</div>`,
+  questions:[
+    {layer:'apply',q:'A ventilated patient has Pplat of 34 cm H₂O at VT 6 mL/kg PBW. According to the adjustment algorithm, what should you do?',opts:['Increase VT to improve ventilation','Decrease VT by 1 mL/kg steps (down to a minimum of 4 mL/kg) since Pplat exceeds 30','Leave settings unchanged — Pplat is acceptable','Switch to a pressure mode immediately'],ans:1,exp:'Pplat > 30 cm H₂O triggers a VT reduction in 1 mL/kg steps, down to a 4 mL/kg PBW floor, to protect against barotrauma/volutrauma.'},
+    {layer:'decide',q:'A ventilated patient develops pH 7.21. According to the protocol, what is the correct first response?',opts:['Decrease the ventilator rate','Since pH is in the 7.15–7.30 range, increase the rate until pH > 7.30; if metabolic acidosis is the cause, address it while keeping PaCO₂ > 25 mmHg','Immediately increase FiO₂','Do nothing — pH 7.21 is within acceptable range'],ans:1,exp:'pH 7.21 falls in the 7.15–7.30 acidosis band. Per protocol, increase the ventilator rate until pH exceeds 7.30, and if metabolic acidosis is contributing, treat the underlying cause while keeping PaCO₂ above 25 mmHg to avoid over-correcting.'},
+  ]
+},
+{
+  id:'pm7',title:'Minute Ventilation (VE)',
+  content:`<h3>💨 Minute Ventilation</h3>
+<p>The total volume of fresh gas entering or leaving the lungs per minute.</p>
+<div class="ls-fact"><strong>Formula: VE = fB × VT</strong><br>
+Example: fB = 12 breaths/min, VT = 500 mL → VE = 12 × 500 = 6,000 mL/min = <strong>6 L/min</strong><br>
+Normal range: <strong>5–10 L/min</strong> at rest</div>
+<h4>Effectiveness vs. Efficiency</h4>
+<ul class="ls-list">
+  <li><strong>Effective:</strong> meets the body's needs for O₂ uptake and CO₂ removal</li>
+  <li><strong>Efficient:</strong> consumes minimal O₂ and produces minimal CO₂ while doing so</li>
+</ul>
+<h4>Worked Example — Targeting Minute Ventilation</h4>
+<p>Target VE ≈ 100 mL/kg PBW/min. For a 70-kg adult: VE ≈ 7,000 mL/min = 7 L/min. If CO₂ production rises or dead space increases, increase total rate or VT to compensate.</p>`,
+  questions:[
+    {layer:'know',q:'What is the formula for Minute Ventilation, and what is the normal resting range?',opts:['VE = VT ÷ RR; range 2–4 L/min','VE = RR × VT; range 5–10 L/min','VE = RR − VT; range 1–3 L/min','VE = RR + VT; range 8–12 L/min'],ans:1,exp:'VE = RR × VT (frequency of breathing × tidal volume). Normal resting range is 5–10 L/min in healthy adults.'},
+    {layer:'apply',q:'A patient breathes at 14/min with VT 450 mL. Calculate VE — is it within normal range?',opts:['4.5 L/min — below normal','6.3 L/min — within normal range (5–10 L/min)','9.0 L/min — within normal range','14.5 L/min — above normal'],ans:1,exp:'VE = 14 × 450 mL = 6,300 mL/min = 6.3 L/min, which falls within the normal 5–10 L/min range.'},
+  ]
+},
+{
+  id:'pm8',title:'Dead Space & Alveolar Ventilation — The Breathing Pattern Trap',
+  content:`<h3>🫧 Dead Space & Alveolar Ventilation</h3>
+<div class="ls-fact"><strong>VT = VD + VA</strong> — tidal volume is split between dead space (no gas exchange) and alveolar volume (where gas exchange happens).</div>
+<h4>3 Types of Dead Space</h4>
+<div class="ls-table"><table><tr><th>Type</th><th>Definition</th><th>Note</th></tr>
+<tr><td>Anatomic</td><td>Conducting airways (nasopharynx → bronchi)</td><td>~1 mL/lb IBW (2.2 mL/kg); ~150 mL for a 150-lb adult</td></tr>
+<tr><td>Alveolar</td><td>Ventilated alveoli that are NOT perfused</td><td>Common cause: pulmonary embolism</td></tr>
+<tr><td>Physiologic</td><td>Anatomic + Alveolar</td><td>Preferred clinical efficiency measure; VD/VT = (PaCO₂−PECO₂)/PaCO₂; normal 0.2–0.4</td></tr>
+</table></div>
+<h4>📋 MINI CLINI — Minute Ventilation, Dead Space, and PaCO₂</h4>
+<p><strong>Initial state:</strong> RR 12/min, VT 600 mL, physiologic VD 200 mL → maintains PaCO₂ 40 mmHg, pH 7.39.</p>
+<p>VE = 12 × 600 = 7,200 mL/min (7.2 L/min). VA = 12 × (600−200) = 4,800 mL/min (4.8 L/min).</p>
+<p><strong>Change:</strong> RR increases to 24/min, but VE stays the same at 7.2 L/min (so VT must drop). New VT = 7,200 ÷ 24 = 300 mL.</p>
+<p>New VA = 24 × (300−200) = 2,400 mL/min (2.4 L/min) — <strong>half</strong> of before, even though VE is unchanged!</p>
+<div class="ls-table"><table><tr><th>Aspect</th><th>Initial</th><th>New</th></tr>
+<tr><td>Rate</td><td>12/min</td><td>24/min</td></tr>
+<tr><td>Tidal Volume</td><td>600 mL</td><td>300 mL</td></tr>
+<tr><td>Minute Ventilation</td><td>7.2 L/min</td><td>7.2 L/min (same!)</td></tr>
+<tr><td>Dead Space</td><td>200 mL</td><td>200 mL</td></tr>
+<tr><td>Alveolar Ventilation</td><td>4.8 L/min</td><td>2.4 L/min</td></tr>
+<tr><td>PaCO₂</td><td>40 mmHg</td><td>72 mmHg</td></tr>
+<tr><td>pH</td><td>7.39</td><td>7.20</td></tr>
+</table></div>
+<p><strong>Discussion:</strong> PaCO₂ is inversely proportional to alveolar ventilation — since VA was halved, PaCO₂ doubled, causing hypercapnia and acidemia, despite VE looking unchanged on the monitor. This is why <strong>VE alone can be a misleading number</strong> — fast, shallow breathing wastes proportionally more of each breath in dead space.</p>
+<h4>5-Pattern Comparison</h4>
+<div class="ls-table"><table><tr><th>Pattern</th><th>RR</th><th>VT</th><th>VE</th><th>VD</th><th>VA</th></tr>
+<tr><td>Normal</td><td>12</td><td>500</td><td>6,000</td><td>150</td><td>4,200</td></tr>
+<tr><td>High rate, low VT</td><td>24</td><td>250</td><td>6,000</td><td>150</td><td>2,400</td></tr>
+<tr><td>Low rate, high VT</td><td>6</td><td>1,000</td><td>6,000</td><td>150</td><td>5,100</td></tr>
+<tr><td>↑ Dead space</td><td>12</td><td>500</td><td>6,000</td><td>300</td><td>2,400</td></tr>
+<tr><td>Compensated ↑ VD</td><td>12</td><td>650</td><td>7,800</td><td>300</td><td>4,200</td></tr>
+</table></div>`,
+  questions:[
+    {layer:'know',q:'Which type of dead space is caused by alveoli that are ventilated but not perfused?',opts:['Anatomic dead space','Alveolar dead space','Physiologic dead space','Mechanical dead space'],ans:1,exp:'Alveolar dead space = ventilated alveoli lacking blood flow. Common cause: pulmonary embolism. Physiologic VD = anatomic + alveolar VD.'},
+    {layer:'apply',q:'Using the MINI CLINI numbers: a patient at RR 24/min, VT 300 mL, VD 200 mL — what is their alveolar ventilation?',opts:['7.2 L/min','4.8 L/min','2.4 L/min','1.2 L/min'],ans:2,exp:'VA = RR × (VT − VD) = 24 × (300−200) = 24 × 100 = 2,400 mL/min = 2.4 L/min — exactly matching the MINI CLINI case, despite a normal-looking 7.2 L/min minute ventilation.'},
+    {layer:'decide',q:'A patient\'s minute ventilation looks normal on the monitor (7.2 L/min) but their PaCO₂ has risen from 40 to 72 mmHg. What should you suspect, and what is your next action?',opts:['The monitor is malfunctioning — ignore the PaCO₂','The patient has switched to fast, shallow breathing — check actual RR and VT, not just VE, since VA may have dropped sharply despite normal VE','This is always a metabolic problem unrelated to breathing pattern','No action needed since VE is normal'],ans:1,exp:'This is the exact Breathing Pattern Trap from the MINI CLINI: normal VE can mask a dangerous drop in alveolar ventilation if the patient is breathing fast and shallow. The RT must check the actual RR/VT breakdown, not rely on VE alone, and intervene to increase VT (even though this raises work of breathing).'},
+  ]
+},
+{
+  id:'pm9',title:'Effectiveness of Ventilation — Hypo/Hyperventilation & Hyperpnea',
+  content:`<h3>⚖️ Effective Ventilation</h3>
+<p>Effective ventilation removes CO₂ at a rate that maintains normal pH. A healthy adult produces ~200 mL CO₂/min at rest — alveolar ventilation must match this to keep acid-base balance, where PACO₂ ≈ PaCO₂ ≈ 40 mmHg.</p>
+<div class="ls-table"><table><tr><th>Type</th><th>Definition</th><th>Indicators</th><th>Effect on pH</th></tr>
+<tr><td>Hypoventilation</td><td>Ventilation &lt; metabolic needs</td><td>↑ PaCO₂</td><td>Respiratory acidosis (pH &lt; 7.35)</td></tr>
+<tr><td>Hyperventilation</td><td>Ventilation &gt; metabolic needs</td><td>↓ PaCO₂ (&lt; 40)</td><td>Respiratory alkalosis (pH &gt; 7.45)</td></tr>
+<tr><td>Hyperpnea</td><td>↑ ventilation matching ↑ metabolism (e.g. exercise)</td><td>Normal PaCO₂ (35–45)</td><td>No significant change (~7.4)</td></tr>
+</table></div>`,
+  questions:[
+    {layer:'know',q:'A patient has elevated PaCO₂ and pH below 7.35. This pattern represents:',opts:['Hyperventilation causing respiratory alkalosis','Hypoventilation causing respiratory acidosis','Hyperpnea — a normal exercise response','Metabolic alkalosis'],ans:1,exp:'Elevated PaCO₂ + pH < 7.35 = hypoventilation causing respiratory acidosis. Ventilation is not meeting metabolic CO₂ removal needs.'},
+    {layer:'decide',q:'During exercise testing, a patient\'s RR rises to 28/min but their PaCO₂ stays at 40 mmHg and pH stays near 7.4. How should this be classified, and does it require RT intervention?',opts:['Hyperventilation — needs treatment','Hyperpnea — a normal proportional response to increased metabolic demand; no intervention needed','Hypoventilation — needs increased ventilatory support','Respiratory alkalosis — needs sedation'],ans:1,exp:'Hyperpnea is ventilation that rises in proportion to metabolic demand (exercise), keeping PaCO₂ and pH normal. This is a healthy physiologic response, not a pathology — no intervention is warranted.'},
+  ]
+},
+{
+  id:'pm10',title:'PAO₂ & A-a Gradient — The P/F Ratio Worked Case',
+  content:`<h3>🔬 Alveolar Oxygen Tensions</h3>
+<div class="ls-fact"><strong>Full Alveolar Air Equation:</strong><br>
+PAO₂ = [(PB − PH₂O) × FiO₂] − (PACO₂ / RQ)<br>
+PB = barometric pressure (760 mmHg sea level), PH₂O = 47 mmHg, RQ ≈ 0.8</div>
+<div class="ls-fact"><strong>Simplified (room air, sea level):</strong> PAO₂ = 150 − (1.25 × PaCO₂)</div>
+<h4>Normal Diffusion Gradients</h4>
+<div class="ls-table"><table><tr><th>Location</th><th>O₂ (torr)</th><th>CO₂ (torr)</th></tr>
+<tr><td>Air</td><td>160</td><td>0.3</td></tr><tr><td>Trachea</td><td>148</td><td>20</td></tr>
+<tr><td>Alveoli</td><td>101</td><td>45</td></tr><tr><td>Tissues</td><td>45</td><td>50</td></tr><tr><td>Cells</td><td>7</td><td>60</td></tr>
+</table></div>
+<h4>📋 MINI CLINI — A-a Gradient and P/F Ratio</h4>
+<p><strong>Patient:</strong> 45-year-old woman, FiO₂ 70%, PaO₂ 50 mmHg, PaCO₂ 40 mmHg, sea level.</p>
+<p><strong>Step 1 — Compute PAO₂:</strong> [(760−47) × 0.70] − (40/0.8) = (713 × 0.70) − 50 = 499.1 − 50 = <strong>449.1 mmHg</strong></p>
+<p><strong>Step 2 — A-a Gradient:</strong> PAO₂ − PaO₂ = 449.1 − 50 = <strong>399.1 mmHg</strong> (normal is only 5–10 mmHg!)</p>
+<p><strong>Step 3 — P/F Ratio:</strong> PaO₂ / FiO₂ = 50 / 0.70 = <strong>71.4</strong></p>
+<div class="ls-fact"><strong>Discussion:</strong> Both values are severely abnormal. The huge A-a gradient (399.1 vs normal 5–10) shows inefficient O₂ transfer. The P/F ratio of 71.4 indicates severe hypoxemia — despite FiO₂ of 0.70, this patient has a serious oxygenation problem and needs immediate evaluation for ICU transfer.</div>
+<h4>Reference Thresholds</h4>
+<div class="ls-fact">P/F &gt; 350–400: Normal | P/F &lt; 300: Impairment | P/F &lt; 200: Moderate-Severe ARDS | P/F &lt; 100: Severe ARDS</div>`,
+  questions:[
+    {layer:'apply',q:'Using the simplified equation, what is PAO₂ if PaCO₂ = 50 mmHg (room air, sea level)?',opts:['100 mmHg','87.5 mmHg','112.5 mmHg','75 mmHg'],ans:1,exp:'PAO₂ = 150 − (1.25 × 50) = 150 − 62.5 = 87.5 mmHg. As CO₂ rises, available alveolar O₂ falls — this is why hypoventilation causes hypoxemia.'},
+    {layer:'apply',q:'Following the MINI CLINI method exactly: FiO₂ = 0.70, PaO₂ = 50, PaCO₂ = 40 (sea level). What is the A-a gradient?',opts:['50 mmHg','100 mmHg','399.1 mmHg','449.1 mmHg'],ans:2,exp:'PAO₂ = [(760−47)×0.70] − (40/0.8) = 499.1 − 50 = 449.1 mmHg. A-a = PAO₂ − PaO₂ = 449.1 − 50 = 399.1 mmHg — exactly matching the worked case.'},
+    {layer:'decide',q:'A patient on FiO₂ 0.70 has a P/F ratio of 71.4. What does this mean clinically, and what should the RT do?',opts:['Mild impairment — recheck in a few hours','Severe hypoxemia (P/F < 100 = severe ARDS territory) — the patient needs immediate evaluation for ICU-level care, since simply raising FiO₂ further will not fix this degree of shunt','Normal oxygenation — no action needed','Decrease FiO₂ since the patient is over-oxygenated'],ans:1,exp:'P/F of 71.4 is far below the 100 threshold for severe ARDS. A P/F this low usually reflects significant shunt physiology that won\'t respond to FiO₂ alone — the patient needs urgent escalation (PEEP optimization, ICU evaluation, possible intubation).'},
+  ]
+},
+{
+  id:'pm11',title:'ABG Normal Values & Clinical Decision Tables',
+  content:`<h3>🩸 ABG Normal Values</h3>
+<div class="ls-table"><table><tr><th>Parameter</th><th>Normal Arterial</th><th>Acceptable Range</th></tr>
+<tr><td>pH</td><td>7.40</td><td>7.35–7.45 (Sanz Electrode)</td></tr>
+<tr><td>PaCO₂</td><td>40 torr</td><td>35–45 torr (Severinghaus Electrode)</td></tr>
+<tr><td>PaO₂</td><td>97 torr</td><td>80–100 torr (Clark Electrode)</td></tr>
+<tr><td>SaO₂/SpO₂</td><td>98%</td><td>95–100%</td></tr>
+<tr><td>HCO₃⁻</td><td>24 mEq/L</td><td>22–26 mEq/L</td></tr>
+<tr><td>BE</td><td>0</td><td>-2 to +2</td></tr>
+<tr><td>Hb</td><td>14 g</td><td>12–16 g</td></tr>
+<tr><td>CaO₂</td><td>20 Vol%</td><td>17–20 Vol%</td></tr>
+</table></div>
+<h4>PaCO₂ Clinical Decision Table</h4>
+<div class="ls-table"><table><tr><th>PaCO₂</th><th>Interpretation</th><th>Response</th></tr>
+<tr><td>35–45 torr</td><td>Normal ventilation</td><td>Don't change settings; don't initiate mechanical ventilation</td></tr>
+<tr><td>Above 45</td><td>Patient NOT ventilating</td><td>Initiate ventilation, remove/decrease mechanical dead space, increase current ventilation</td></tr>
+<tr><td>Below 35</td><td>Patient ventilating too much</td><td>Don't intubate; decrease ventilation if PaO₂ is high; consider other causes of hyperventilation</td></tr>
+</table></div>
+<h4>PaO₂/FiO₂ Clinical Decision Table</h4>
+<div class="ls-table"><table><tr><th>PaO₂</th><th>FiO₂</th><th>Interpretation</th><th>Response</th></tr>
+<tr><td>80–100</td><td>0.21–1.00</td><td>Acceptable oxygenation</td><td>Maintain settings, check SO₂ & Hb</td></tr>
+<tr><td>&lt;80 (Hypoxemia)</td><td>0.21–0.59</td><td>Poor ventilation OR V/Q mismatch</td><td>Increase ventilation; increase FiO₂ up to 0.60</td></tr>
+<tr><td>&lt;80 (Hypoxemia)</td><td>0.60+</td><td>Shunt, refractory hypoxemia, venous admixture</td><td>Start/increase CPAP or PEEP</td></tr>
+<tr><td>&gt;100 (Hyperoxemia)</td><td>0.22–1.00</td><td>Over oxygenation</td><td>Decrease FiO₂, PEEP, or CPAP</td></tr>
+</table></div>
+<h4>Acid-Base Status</h4>
+<div class="ls-table"><table><tr><th>pH</th><th>Interpretation</th></tr>
+<tr><td>7.35–7.45</td><td>Acceptable — compensated</td></tr>
+<tr><td>Below 7.35</td><td>Acidosis (uncompensated) — caused by ↑CO₂ or low HCO₃⁻</td></tr>
+<tr><td>Above 7.45</td><td>Alkalosis (uncompensated) — caused by ↑HCO₃⁻ or low CO₂</td></tr>
+</table></div>
+<h4>COPD Case — Compensated Chronic Respiratory Acidosis</h4>
+<div class="ls-fact">pH 7.36 | PaO₂ 58 torr | PaCO₂ 62 torr | HCO₃⁻ 36 mEq/L<br>
+= Compensated (chronic) respiratory acidosis with hypoxemia.<br><br>
+⚠️ <strong>Oxygen-induced hypoventilation</strong> can occur if a COPD patient is given too much O₂ — they become tired, sleepy, lethargic, then unresponsive.</div>`,
+  questions:[
+    {layer:'know',q:'A patient has PaCO₂ = 55 torr. Per the decision table, what is the correct response?',opts:['Don\'t change ventilation settings','Initiate or increase ventilation; remove/decrease mechanical dead space','Decrease FiO₂','Decrease ventilation'],ans:1,exp:'PaCO₂ > 45 torr means the patient is NOT ventilating adequately — initiate/increase ventilation and reduce mechanical dead space.'},
+    {layer:'decide',q:'A patient has PaO₂ of 65 mmHg on FiO₂ 0.65. According to the decision table, what is the correct intervention?',opts:['Continue raising FiO₂ indefinitely','Since PaO₂ < 80 with FiO₂ ≥ 0.60, this suggests shunt/refractory hypoxemia — start or increase CPAP/PEEP rather than relying on FiO₂ alone','Decrease FiO₂ since oxygenation looks fine','No action needed'],ans:1,exp:'PaO₂ < 80 with FiO₂ ≥ 0.60 points to shunt or refractory hypoxemia — simply raising FiO₂ further has diminishing returns. CPAP (spontaneous) or PEEP (ventilated) is the correct next step to recruit alveoli.'},
+    {layer:'decide',q:'A COPD patient with the classic ABG (pH 7.36, PaO₂ 58, PaCO₂ 62, HCO₃⁻ 36) is placed on high-flow O₂ and becomes increasingly sleepy and hard to arouse. What is happening, and what should you do?',opts:['Normal sedation from illness — no action needed','Likely oxygen-induced hypoventilation — the high FiO₂ may have blunted their hypoxic drive; reassess ABG, consider titrating FiO₂ down to target, and prepare to support ventilation if CO₂ is climbing','This means the patient needs more oxygen, not less','This is unrelated to the oxygen therapy'],ans:1,exp:'This is the textbook oxygen-induced hypoventilation scenario described in the pamphlet — over-oxygenating a chronic CO₂ retainer can blunt their hypoxic respiratory drive, leading to worsening hypercapnia and decreased mental status. The RT must reassess the ABG and adjust FiO₂/ventilatory support accordingly.'},
+  ]
+},
+{
+  id:'pm12',title:'Complete Blood Count (CBC)',
+  content:`<h3>🔴 CBC Information</h3>
+<div class="ls-table"><table><tr><th>Component</th><th>Normal</th><th>Low</th><th>High</th></tr>
+<tr><td>RBC</td><td>4–6 mill/mm³</td><td>Anemia (blood loss, hemorrhage)</td><td>Polycythemia (chronic tissue hypoxemia, e.g. COPD)</td></tr>
+<tr><td>Hemoglobin (Hb)</td><td>12–16 g/dL</td><td>Anemia</td><td>Polycythemia</td></tr>
+<tr><td>Hematocrit (Hct)</td><td>40–50%</td><td>Anemia</td><td>Polycythemia</td></tr>
+<tr><td>WBC</td><td>5,000–10,000/mm³</td><td>Leukopenia → viral infection (antivirals)</td><td>Leukocytosis → bacterial infection (antibiotics)</td></tr>
+</table></div>
+<h4>Types of WBC</h4>
+<div class="ls-table"><table><tr><th>Type</th><th>% Normal</th><th>Note</th></tr>
+<tr><td>Neutrophils — Bands</td><td>4% (immature)</td><td>↑ with bacterial infections</td></tr>
+<tr><td>Neutrophils — Segs</td><td>60% (mature)</td><td>↓ with bacterial infections</td></tr>
+<tr><td>Eosinophils</td><td>2%</td><td>Associated with asthma, ↑ with allergic reactions</td></tr>
+<tr><td>Monocytes</td><td>3%</td><td>Associated with tuberculosis</td></tr>
+<tr><td>Lymphocytes</td><td>30%</td><td>—</td></tr>
+<tr><td>Basophils</td><td>1%</td><td>—</td></tr>
+</table></div>
+<div class="ls-fact"><strong>Hemoglobin carries 1.34 mL O₂ per gram</strong> — this is the constant used in the CaO₂ formula: CaO₂ = (Hb × 1.34 × SaO₂) + (PaO₂ × 0.003)</div>`,
+  questions:[
+    {layer:'know',q:'A WBC count of 18,000/mm³ (leukocytosis) most likely indicates:',opts:['Viral infection — recommend antivirals','Bacterial infection — recommend antibiotics','Anemia','Normal finding'],ans:1,exp:'Leukocytosis (WBC > 10,000) = bacterial infection → antibiotics. Leukopenia (WBC < 5,000) = viral infection → antivirals.'},
+    {layer:'decide',q:'A COPD patient has Hct 56% (high) and a history of chronic hypoxemia. What is the most likely explanation, and is this dangerous on its own?',opts:['Acute hemorrhage — needs transfusion','Polycythemia from chronic tissue hypoxemia — the body compensates by making more RBCs to carry more O₂; this is compensatory but increases blood viscosity and clot risk, so it should still be monitored','Bacterial infection','A lab error — should be ignored'],ans:1,exp:'Polycythemia in COPD is a compensatory response to chronic hypoxemia — more RBCs/Hb means more O₂-carrying capacity. However, the resulting increased blood viscosity raises clotting risk, so it remains clinically relevant even though it represents the body adapting appropriately.'},
+  ]
+},
+{
+  id:'pm13',title:'Basic Metabolic Panel — Electrolytes & Chemistry',
+  content:`<h3>🧪 BMP / Chemistry</h3>
+<p>Electrolytes are required for normal metabolism — closely tied to fluid levels, muscle function (including cardiac), and kidney function. Imbalances cause muscle weakness, soreness, nausea, and mental changes (lethargy, dizziness, drowsiness).</p>
+<div class="ls-table"><table><tr><th>Electrolyte</th><th>Normal</th><th>Low</th><th>High</th></tr>
+<tr><td>Potassium K⁺</td><td>3.5–4.5 mEq/L</td><td>Hypokalemia: metabolic alkalosis, excessive excretion, vomiting, flattened T waves</td><td>Hyperkalemia: kidney failure, spiked T wave, metabolic acidosis</td></tr>
+<tr><td>Sodium Na⁺</td><td>135–145 mEq/L</td><td>Hyponatremia: diuretics, vomiting, diarrhea, CHF, IV therapy</td><td>Hypernatremia: dehydration — Na⁺ retained in exchange for K⁺</td></tr>
+<tr><td>Chloride Cl⁻</td><td>90–100 mEq/L</td><td>Hypochloremia → metabolic alkalosis</td><td>Hyperchloremia → metabolic acidosis</td></tr>
+<tr><td>HCO₃⁻</td><td>22–26 mEq/L</td><td>↓ HCO₃⁻ → metabolic acidosis</td><td>↑ HCO₃⁻ → metabolic alkalosis</td></tr>
+</table></div>
+<h4>Kidney Function Markers</h4>
+<div class="ls-table"><table><tr><th>Test</th><th>Normal</th><th>Note</th></tr>
+<tr><td>Creatinine</td><td>0.7–1.3 mg/dL</td><td>More specific for kidney failure than BUN</td></tr>
+<tr><td>BUN</td><td>8–25 mg/dL</td><td>Increased = kidney failure</td></tr>
+</table></div>
+<div class="ls-fact"><strong>Critical relationship:</strong><br>
+↑ HCO₃⁻ → metabolic alkalosis | ↑ PCO₂ → respiratory acidosis<br>
+↓ HCO₃⁻ → metabolic acidosis | ↓ PCO₂ → respiratory alkalosis<br>
+<em>HCO₃⁻ and PCO₂ changes move in OPPOSITE directions for the same acid-base label!</em></div>`,
+  questions:[
+    {layer:'know',q:'Low HCO₃⁻ (18 mEq/L) with low pH indicates:',opts:['Metabolic alkalosis','Respiratory acidosis','Metabolic acidosis','Respiratory alkalosis'],ans:2,exp:'HCO₃⁻ < 22 mEq/L + low pH = metabolic acidosis. Compare: ↑CO₂ → respiratory acidosis; ↓HCO₃⁻ → metabolic acidosis — both lower pH but through opposite mechanisms.'},
+    {layer:'decide',q:'A patient has K⁺ 2.9 mEq/L (low) and flattened T waves on ECG, with a history of vomiting. What acid-base disturbance commonly accompanies this picture, and why does it matter for the RT?',opts:['Respiratory acidosis — unrelated to K⁺','Metabolic alkalosis — hypokalemia is commonly associated with it; electrolyte correction often needs to happen alongside any ventilatory management, since severe hypokalemia also risks dangerous arrhythmias','Metabolic acidosis — no cardiac risk','This has no clinical significance'],ans:1,exp:'Hypokalemia is classically linked to metabolic alkalosis (e.g., from vomiting/excessive excretion) and produces flattened T waves. Because severe hypokalemia carries real arrhythmia risk, the RT should flag this for the team — it isn\'t purely a "chemistry problem," it can destabilize the patient during respiratory care.'},
+  ]
+},
+];
+
+/* ── PAMPHLET STYLES (injected) ── */
+(function(){
+const s=document.createElement('style');
+s.textContent=`
+.pm-progress-outer{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;margin:0 0 18px;overflow:hidden}
+.pm-progress-inner{height:100%;border-radius:3px;background:linear-gradient(90deg,#16A34A,var(--teal));transition:width .5s ease}
+.pm-page-counter{font-size:11px;color:var(--text3);text-align:right;margin-bottom:8px}
+.pm-q-block{background:rgba(3,3,20,0.7);border:1px solid rgba(22,163,74,0.2);border-radius:14px;padding:16px 18px;margin-top:16px}
+.pm-q-block .a-q-box{margin-top:10px}
+.pm-continue-banner{text-align:center;padding:20px 0 8px}
+.pm-continue-banner p{font-size:13px;color:var(--text3);margin-bottom:10px}
+.pm-done-check{color:var(--teal);font-size:13px;font-weight:600;text-shadow:0 0 10px rgba(0,255,209,0.5)}
+`;
+document.head.appendChild(s);
+})();
+
+/* ── PAMPHLET ENGINE ── */
+let pamphletState={pageIdx:0,answered:{}};
+
+function isPamphletPageDone(pi){
+  return!!(prog.rp['pm_'+pi]&&prog.rp['pm_'+pi].done);
+}
+
+function openPamphlet(){
+  // Resume at first unfinished page, or page 0 if none done
+  let startIdx=0;
+  for(let i=0;i<PAMPHLET.length;i++){if(!isPamphletPageDone(i)){startIdx=i;break;}if(i===PAMPHLET.length-1)startIdx=i;}
+  pamphletState={pageIdx:startIdx,answered:{}};
+  openModal('📋','#16A34A',"Mr. Mendoza's Study Pamphlet",'Read each page, then answer to keep going',buildPamphletHTML());
+}
+
+function buildPamphletHTML(){
+  const ps=pamphletState;
+  const page=PAMPHLET[ps.pageIdx];
+  const total=PAMPHLET.length;
+  const pct=Math.round(((ps.pageIdx)/total)*100);
+  const allAnswered=page.questions.every((_,qi)=>ps.answered[qi]!==undefined);
+
+  let html=`<div class="av">`;
+  html+=`<div class="pm-progress-outer"><div class="pm-progress-inner" style="width:${pct}%"></div></div>`;
+  html+=`<div class="pm-page-counter">Page ${ps.pageIdx+1} of ${total}</div>`;
+  html+=`<div class="ls-section-header"><div class="ls-section-num" style="background:#16A34A22;color:#16A34A">${ps.pageIdx+1}</div><div class="ls-section-title">${page.title}</div></div>`;
+  html+=page.content;
+
+  page.questions.forEach((q,qi)=>{
+    const ans=ps.answered[qi];
+    const opts=q.opts.map((o,oi)=>{
+      let cls='';
+      if(ans!==undefined){
+        if(oi===q.ans)cls='ok';else if(oi===ans)cls='bad';
+      }
+      return`<button class="a-opt ${cls}" id="pmq${qi}o${oi}" ${ans!==undefined?'disabled':''} onclick="pmAnswer(${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>`;
+    }).join('');
+    html+=`<div class="pm-q-block">
+      ${layerBadge(q.layer)}
+      <div class="a-q-box">${q.q}</div>
+      <div class="a-opts">${opts}</div>
+      ${ans!==undefined?`<div class="a-exp-box">${q.exp}</div>`:''}
+    </div>`;
+  });
+
+  if(allAnswered){
+    const isLast=ps.pageIdx===total-1;
+    html+=`<div class="pm-continue-banner">
+      <p class="pm-done-check">✓ Page complete</p>
+      <button class="a-next-btn teal" onclick="${isLast?'pmFinish()':'pmAdvance()'}">${isLast?'Finish pamphlet 🎉':'Continue reading →'}</button>
+    </div>`;
+  } else {
+    html+=`<div class="pm-continue-banner"><p>Answer the question${page.questions.length>1?'s':''} above to keep reading</p></div>`;
+  }
+
+  html+='</div>';
+  return html;
+}
+
+function pmAnswer(qi,oi){
+  const ps=pamphletState;
+  if(ps.answered[qi]!==undefined)return;
+  ps.answered[qi]=oi;
+  const page=PAMPHLET[ps.pageIdx];
+  const ok=oi===page.questions[qi].ans;
+  addXP(ok?15:5,'');
+  document.getElementById('modal-body').innerHTML=buildPamphletHTML();
+}
+
+function pmAdvance(){
+  const ps=pamphletState;
+  const page=PAMPHLET[ps.pageIdx];
+  const correct=page.questions.filter((q,qi)=>ps.answered[qi]===q.ans).length;
+  if(!prog.rp['pm_'+ps.pageIdx])prog.rp['pm_'+ps.pageIdx]={s:0,c:0,t:0,done:false};
+  prog.rp['pm_'+ps.pageIdx].done=true;
+  prog.rp['pm_'+ps.pageIdx].c=correct;
+  prog.rp['pm_'+ps.pageIdx].t=page.questions.length;
+  saveProg();updateRoomGrid();
+  addXP(20,'Page complete!');
+  ps.pageIdx++;
+  ps.answered={};
+  document.getElementById('modal-body').innerHTML=buildPamphletHTML();
+}
+
+function pmFinish(){
+  const ps=pamphletState;
+  const page=PAMPHLET[ps.pageIdx];
+  const correct=page.questions.filter((q,qi)=>ps.answered[qi]===q.ans).length;
+  if(!prog.rp['pm_'+ps.pageIdx])prog.rp['pm_'+ps.pageIdx]={s:0,c:0,t:0,done:false};
+  prog.rp['pm_'+ps.pageIdx].done=true;
+  prog.rp['pm_'+ps.pageIdx].c=correct;
+  prog.rp['pm_'+ps.pageIdx].t=page.questions.length;
+  saveProg();updateRoomGrid();
+  prog.badges++;saveProg();updateHUD();
+  document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+    <span class="big-emoji" style="font-size:48px;display:block;margin-bottom:12px">🎓</span>
+    <div class="score-title" style="color:var(--teal)">Pamphlet complete!</div>
+    <div class="score-sub">You read all ${PAMPHLET.length} pages and applied Know It → Apply It → Decide With It throughout. +250 XP and a badge earned!</div>
+    <div class="score-btns"><button class="a-next-btn teal" onclick="closeModal()">Done</button></div>
+  </div>`;
+  addXP(250,'Study Pamphlet complete!');
+  showNotif('🎓 Pamphlet complete!','You read the whole resource — nice work!');
 }
 
 /* ── INIT ── */
