@@ -249,6 +249,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:fl
 .match-item.mok{border-color:var(--teal);background:rgba(0,255,209,0.07);color:var(--teal);cursor:default;box-shadow:0 0 16px rgba(0,255,209,0.25);text-shadow:0 0 8px rgba(0,255,209,0.6)}
 .match-item.merr{border-color:var(--coral);background:rgba(255,77,109,0.07);color:var(--coral);box-shadow:0 0 16px rgba(255,77,109,0.2)}
 
+/* TIC-TAC-TOE ABG GRID */
+.ttt-header{display:grid;grid-template-columns:74px repeat(3,1fr);gap:8px;margin-bottom:8px}
+.ttt-header-cell{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);text-align:center;padding-bottom:2px}
+.ttt-board{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.ttt-row{display:grid;grid-template-columns:74px repeat(3,1fr);gap:8px;align-items:stretch}
+.ttt-row-label{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;padding-right:4px}
+.ttt-row-label-name{font-size:11px;font-weight:700;color:var(--text2)}
+.ttt-row-val{font-size:14px;font-weight:800;color:var(--purple3);font-family:'Space Grotesk',sans-serif;text-shadow:0 0 10px rgba(123,111,255,0.5)}
+.ttt-cell{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;font-size:11px;color:var(--text2);transition:all .18s;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px}
+.ttt-cell:hover:not(.locked){border-color:rgba(123,111,255,0.5);background:rgba(123,111,255,0.08);box-shadow:0 0 14px rgba(123,111,255,0.2)}
+.ttt-cell.locked{cursor:default}
+.ttt-cell.ok{border-color:var(--teal);background:rgba(0,255,209,0.08);color:var(--teal);box-shadow:0 0 16px rgba(0,255,209,0.3)}
+.ttt-cell.bad{border-color:var(--coral);background:rgba(255,77,109,0.08);color:var(--coral)}
+.ttt-cell-mark{font-size:15px;font-weight:800;line-height:1}
+
 /* TIPS */
 .tip-c{background:rgba(3,3,20,0.7);border:1px solid rgba(123,111,255,0.12);border-radius:14px;padding:14px 18px;margin-bottom:10px;transition:all .2s}
 .tip-c:hover{border-color:rgba(123,111,255,0.4);box-shadow:0 0 18px rgba(123,111,255,0.1)}
@@ -442,6 +457,15 @@ footer{
   .match-col + .match-col{margin-top:8px}
   .match-item{padding:10px 12px;font-size:12px}
 
+  /* Tic-Tac-Toe */
+  .ttt-header{grid-template-columns:50px repeat(3,1fr);gap:5px}
+  .ttt-header-cell{font-size:9px}
+  .ttt-row{grid-template-columns:50px repeat(3,1fr);gap:5px}
+  .ttt-row-label-name{font-size:9px}
+  .ttt-row-val{font-size:11px}
+  .ttt-cell{padding:9px 3px;font-size:9px;min-height:40px}
+  .ttt-cell-mark{font-size:12px}
+
   /* Score screen */
   .score-ring{width:88px;height:88px}
   .score-num{font-size:20px}
@@ -595,7 +619,7 @@ footer{
   </div>
 
   <div class="hero-stats">
-    <div class="h-stat"><div class="h-stat-n" id="stat-rooms">14</div><div class="h-stat-l">Rooms</div></div>
+    <div class="h-stat"><div class="h-stat-n" id="stat-rooms">15</div><div class="h-stat-l">Rooms</div></div>
     <div class="h-stat"><div class="h-stat-n">75+</div><div class="h-stat-l">Flashcards</div></div>
     <div class="h-stat"><div class="h-stat-n">15+</div><div class="h-stat-l">Case Questions</div></div>
     <div class="h-stat"><div class="h-stat-n">XP</div><div class="h-stat-l">Progress Tracking</div></div>
@@ -864,6 +888,7 @@ const ROOMS=[
 {id:'tips',name:'Study Skills Center',icon:'💡',color:'#3B6D11',tag:'Study Science',tagClass:'badge-teal',desc:'10 evidence-based learning techniques — spaced repetition, Feynman, AIDR',xp:'+20 XP'},
 {id:'lessons',name:"Mr. Mendoza's Lessons",icon:'📖',color:'#C026D3',tag:'Structured Lessons',tagClass:'badge-purple',desc:'All 3 lessons in order — read content, answer questions, unlock the next section',xp:'+200 XP'},
 {id:'pamphlet',name:"Mr. Mendoza's Study Pamphlet",icon:'📋',color:'#16A34A',tag:'Full Resource',tagClass:'badge-teal',desc:'Read the complete original pamphlet page-by-page, applying Know It → Apply It → Decide With It as you go',xp:'+250 XP'},
+{id:'tictactoe',name:'ABG Tic-Tac-Toe',icon:'⭕',color:'#0EA5E9',tag:'Visual Mnemonic',tagClass:'badge-purple',desc:'Place your marks on the classic 3×3 ABG grid, then read the column pattern to find the diagnosis',xp:'+90 XP'},
 ];
 
 /* ── XP & PROGRESS ── */
@@ -1010,6 +1035,7 @@ function openRoom(id){
     case 'tips':openTips(r);break;
     case 'lessons':openRoom_lessons();break;
     case 'pamphlet':openPamphlet();break;
+    case 'tictactoe':openTicTacToe(r);break;
   }
 }
 
@@ -2514,6 +2540,147 @@ function pmFinish(){
   </div>`;
   addXP(250,'Study Pamphlet complete!');
   showNotif('🎓 Pamphlet complete!','You read the whole resource — nice work!');
+}
+
+/* ══════════════════════════════════════
+   ⭕ ABG TIC-TAC-TOE
+   The classic 3×3 visual mnemonic for ABG interpretation.
+   Columns: Acidosis | Normal | Alkalosis
+   Rows: pH | PaCO₂ | HCO₃⁻
+   Place a mark in the correct column for each row, then read
+   which column has two marks lined up to find the primary disorder.
+══════════════════════════════════════ */
+const TTT_CASES=[
+{ph:7.40,paco2:40,hco3:24,pao2:95,
+  interp:'Normal ABG',
+  exp:'All three values land in the Normal column — no acid-base disturbance. PaO₂ 95 mmHg is also within the normal 80–100 range, so oxygenation is adequate.'},
+{ph:7.25,paco2:60,hco3:24,pao2:65,
+  interp:'Acute (Uncompensated) Respiratory Acidosis with Hypoxemia',
+  exp:'pH (Acidosis) and PaCO₂ (Acidosis, >45) line up in the same column — Step 1 says that\'s Respiratory. HCO₃⁻ is still in the Normal column, so the kidneys haven\'t had time to compensate yet (Step 2) — Uncompensated. PaO₂ 65 mmHg is below 80, so hypoxemia is present too (Step 4).'},
+{ph:7.50,paco2:28,hco3:24,pao2:92,
+  interp:'Acute (Uncompensated) Respiratory Alkalosis',
+  exp:'pH (Alkalosis) and PaCO₂ (Alkalosis, <35) line up — Respiratory. HCO₃⁻ is still Normal, so this is Uncompensated. PaO₂ 92 mmHg is within normal range.'},
+{ph:7.25,paco2:38,hco3:15,pao2:96,
+  interp:'Acute (Uncompensated) Metabolic Acidosis',
+  exp:'pH (Acidosis) and HCO₃⁻ (Acidosis, <22) line up — Step 1 says Metabolic. PaCO₂ is still in the Normal column, so the lungs haven\'t compensated yet — Uncompensated. PaO₂ 96 mmHg is normal.'},
+{ph:7.50,paco2:42,hco3:32,pao2:95,
+  interp:'Acute (Uncompensated) Metabolic Alkalosis',
+  exp:'pH (Alkalosis) and HCO₃⁻ (Alkalosis, >26) line up — Metabolic. PaCO₂ is still Normal, so this is Uncompensated. PaO₂ is normal.'},
+{ph:7.30,paco2:60,hco3:30,pao2:70,
+  interp:'Partially Compensated Respiratory Acidosis with Hypoxemia',
+  exp:'pH (Acidosis) and PaCO₂ (Acidosis) line up — Respiratory. HCO₃⁻ has moved out of Normal into the Alkalosis column — the kidneys are retaining bicarbonate to fight back (Step 2). But pH is still abnormal (7.30, not back in the 7.35–7.45 range), so compensation is only Partial (Step 3). PaO₂ 70 mmHg confirms hypoxemia.'},
+{ph:7.37,paco2:60,hco3:34,pao2:58,
+  interp:'Fully Compensated (Chronic) Respiratory Acidosis with Hypoxemia',
+  exp:'PaCO₂ (Acidosis, >45) and HCO₃⁻ (Alkalosis, >26) sit in opposite columns, but pH has been pulled all the way back into the Normal column (7.37) — Step 3 says that\'s Fully Compensated. Since PaCO₂ is the abnormal driver, this is chronic Respiratory Acidosis (classic COPD pattern) with the kidneys fully compensating via retained bicarbonate. PaO₂ 58 mmHg shows significant hypoxemia.'},
+{ph:7.30,paco2:28,hco3:15,pao2:95,
+  interp:'Partially Compensated Metabolic Acidosis',
+  exp:'pH (Acidosis) and HCO₃⁻ (Acidosis, <22) line up — Metabolic. PaCO₂ has dropped out of Normal into the Alkalosis column (<35) — the lungs are blowing off CO₂ to help raise pH (Step 2). pH is still abnormal, so this is only Partially Compensated (e.g., early DKA). PaO₂ is normal.'},
+{ph:7.36,paco2:25,hco3:14,pao2:96,
+  interp:'Fully Compensated Metabolic Acidosis',
+  exp:'HCO₃⁻ (Acidosis, <22) and PaCO₂ (Alkalosis, <35) sit in opposite columns, but pH (7.36) has returned to the Normal column — Fully Compensated (Step 3). Since HCO₃⁻ is the abnormal driver, this is chronic Metabolic Acidosis (e.g., chronic kidney disease) with full respiratory compensation via hyperventilation. PaO₂ is normal.'},
+{ph:7.48,paco2:28,hco3:20,pao2:90,
+  interp:'Partially Compensated Respiratory Alkalosis',
+  exp:'pH (Alkalosis) and PaCO₂ (Alkalosis, <35) line up — Respiratory. HCO₃⁻ has dropped out of Normal into the Acidosis column (<22) — the kidneys are excreting bicarbonate to help bring pH back down (Step 2). pH is still abnormal, so this is Partially Compensated. PaO₂ is normal.'},
+{ph:7.44,paco2:50,hco3:32,pao2:90,
+  interp:'Fully Compensated Metabolic Alkalosis',
+  exp:'HCO₃⁻ (Alkalosis, >26) and PaCO₂ (Acidosis, >45) sit in opposite columns, but pH (7.44) is back in the Normal column — Fully Compensated. Since HCO₃⁻ is the abnormal driver, this is Metabolic Alkalosis with the lungs fully compensating by retaining CO₂ (hypoventilating). PaO₂ is normal.'},
+];
+
+function tttClassify(type,val){
+  if(type==='ph'){if(val<7.35)return 0;if(val>7.45)return 2;return 1;}
+  if(type==='paco2'){if(val>45)return 0;if(val<35)return 2;return 1;}
+  if(type==='hco3'){if(val<22)return 0;if(val>26)return 2;return 1;}
+}
+const TTT_COL_NAMES=['Acidosis','Normal','Alkalosis'];
+
+function openTicTacToe(room){
+  const cases=shuffle([...TTT_CASES]);
+  let idx=0,picks={ph:null,paco2:null,hco3:null},totalCorrect=0,totalRows=0;
+
+  function render(){
+    const c=cases[idx];
+    const pct=Math.round(idx/cases.length*100);
+    const rows=[
+      {key:'ph',name:'pH',val:c.ph.toFixed(2)},
+      {key:'paco2',name:'PaCO₂',val:c.paco2+' mmHg'},
+      {key:'hco3',name:'HCO₃⁻',val:c.hco3+' mEq/L'},
+    ];
+    const rowsHTML=rows.map(r=>{
+      const correctCol=tttClassify(r.key,c[r.key]);
+      const picked=picks[r.key];
+      const cellsHTML=[0,1,2].map(ci=>{
+        let cls='';
+        if(picked!==null){
+          if(ci===correctCol)cls='ok';else if(ci===picked)cls='bad';
+        }
+        const mark=picked===ci?'<span class="ttt-cell-mark">✕</span>':'';
+        const onclick=picked===null?`onclick="tttPick('${r.key}',${ci})"`:'';
+        return`<div class="ttt-cell ${cls} ${picked!==null?'locked':''}" ${onclick}>${mark}${TTT_COL_NAMES[ci]}</div>`;
+      }).join('');
+      return`<div class="ttt-row">
+        <div class="ttt-row-label"><span class="ttt-row-label-name">${r.name}</span><span class="ttt-row-val">${r.val}</span></div>
+        ${cellsHTML}
+      </div>`;
+    }).join('');
+
+    const allPicked=rows.every(r=>picks[r.key]!==null);
+    let resultHTML='';
+    if(allPicked){
+      const isLast=idx===cases.length-1;
+      resultHTML=`<div class="pm-q-block" style="margin-top:16px">
+        <div class="a-badge badge-teal">Interpretation</div>
+        <div class="a-q-box">${c.interp}</div>
+        <div class="a-exp-box">${c.exp}</div>
+      </div>
+      <div class="pm-continue-banner">
+        <button class="a-next-btn teal" onclick="tttNext()">${isLast?'See results →':'Next case →'}</button>
+      </div>`;
+    } else {
+      resultHTML=`<div class="pm-continue-banner"><p>Click a column for each row to place your mark</p></div>`;
+    }
+
+    return`<div class="av">
+      <div class="a-prog-bar"><div class="a-prog-fill" style="width:${pct}%;background:${room.color}"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="a-badge badge-purple">Case ${idx+1} of ${cases.length}</div>
+        <span style="font-size:12px;color:var(--text3);font-weight:600">PaO₂ ${c.pao2} mmHg</span>
+      </div>
+      <div class="ttt-header"><div></div><div class="ttt-header-cell">Acidosis</div><div class="ttt-header-cell">Normal</div><div class="ttt-header-cell">Alkalosis</div></div>
+      <div class="ttt-board">${rowsHTML}</div>
+      ${resultHTML}
+    </div>`;
+  }
+
+  window.tttPick=function(key,ci){
+    if(picks[key]!==null)return;
+    picks[key]=ci;
+    const c=cases[idx];
+    const correctCol=tttClassify(key,c[key]);
+    const ok=ci===correctCol;
+    totalRows++;if(ok)totalCorrect++;
+    addXP(ok?10:3,'');
+    markRoom(room.id,ok?1:0,1);
+    document.getElementById('modal-body').innerHTML=render();
+  };
+  window.tttNext=function(){
+    idx++;picks={ph:null,paco2:null,hco3:null};
+    if(idx>=cases.length)tttDone();
+    else document.getElementById('modal-body').innerHTML=render();
+  };
+  function tttDone(){
+    const pct=totalRows?Math.round(totalCorrect/totalRows*100):0;
+    const arc=(276.46*(1-pct/100)).toFixed(2);
+    document.getElementById('modal-body').innerHTML=`<div class="score-wrap">
+      <div class="score-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="${room.color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${arc}" transform="rotate(-90 50 50)"/></svg><div class="score-num">${pct}%</div></div>
+      <div class="score-title">Board complete!</div>
+      <div class="score-sub">${totalCorrect} of ${totalRows} marks placed correctly across ${cases.length} ABGs</div>
+      <div class="score-btns"><button class="a-next-btn" onclick="openTicTacToe(window._tttR)">Play again</button><button class="a-next-btn teal" onclick="closeModal()">Done</button></div>
+    </div>`;
+    addXP(30,'ABG Tic-Tac-Toe complete!');
+    if(pct>=80){prog.badges++;saveProg();updateHUD();showNotif('⭐ Badge earned!','Tic-Tac-Toe: '+pct+'%');}
+  }
+  window._tttR=room;
+  openModal(room.icon,room.color,room.name,'Place your mark, then read the pattern',render());
 }
 
 /* ── INIT ── */
